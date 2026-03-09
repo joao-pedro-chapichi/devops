@@ -4,8 +4,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Column;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Aluno {
     
     @Id
@@ -15,7 +23,7 @@ public class Aluno {
     @Column(nullable = false, length = 40)
     private String nomeAluno;
 
-    @Column(nullable = false, length = 40)
+    @Column(nullable = false, length = 40)  
     private String emailAluno;
 
     @Column(nullable = false, length = 11)
@@ -27,6 +35,6 @@ public class Aluno {
     @Column(nullable = false, length = 11)
     private String cpfAluno;
 
-     @Column(nullable = false)
+    @Column(nullable = false)
     private String raAluno;
 }
