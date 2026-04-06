@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cadastro de Alunos</title>
+<title>Cadastro de Cursos</title>
 
 <style>
 
@@ -22,7 +22,7 @@ body{
     padding: 35px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    width: 400px;
+    width: 350px;
 }
 
 h1{
@@ -34,12 +34,12 @@ h1{
 label{
     font-weight: bold;
     display: block;
-    margin-top: 12px;
+    margin-top: 15px;
 }
 
 input[type="text"]{
     width: 100%;
-    padding: 9px;
+    padding: 10px;
     margin-top: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
@@ -89,35 +89,26 @@ input[type="text"]:focus{
 
 <div class="container">
 
-<h1>Cadastro de Alunos</h1>
+<h1>Cadastro de Cursos</h1>
 
-<form th:action="@{/alunos/salvar}" method="post" th:object="${aluno}">
+<form th:action="@{/cursos/salvar}" method="post" th:object="${curso}">
 
-<input type="hidden" th:field="*{idAluno}">
+<input type="hidden" th:field="*{idCurso}">
 
 <label>Nome:</label>
-<input type="text" th:field="*{nomeAluno}" required>
+<input type="text" th:field="*{nomeCurso}" required>
 
-<label>Email:</label>
-<input type="text" th:field="*{emailAluno}" required>
+<label>Período:</label>
+<input type="text" th:field="*{periodoCurso}" required>
 
-<label>Telefone:</label>
-<input type="text" th:field="*{telefoneAluno}" required>
-
-<label>Endereço:</label>
-<input type="text" th:field="*{enderecoAluno}" required>
-
-<label>CPF:</label>
-<input type="text" th:field="*{cpfAluno}" required>
-
-<label>RA:</label>
-<input type="text" th:field="*{raAluno}" required>
+<label>Carga Horária:</label>
+<input type="text" th:field="*{cargaHorariaCurso}" required>
 
 <input type="submit" value="Salvar" class="botao">
 
 </form>
 
-<a href="/alunos/listar" class="voltar">Voltar para lista</a>
+<a href="/cursos/listar" class="voltar">Voltar para lista</a>
 
 </div>
 
