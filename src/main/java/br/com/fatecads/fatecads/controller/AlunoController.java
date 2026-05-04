@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import br.com.fatecads.fatecads.entity.Aluno;
 import br.com.fatecads.fatecads.service.AlunoService;
-import org.springframework.web.bind.annotation.RequestParam;
+import br.com.fatecads.fatecads.service.CursoService;
 
 
 
@@ -22,6 +22,9 @@ public class AlunoController {
     // Injeção de dependêccia da service de alunos
     @Autowired
     private AlunoService alunoService;
+
+    @Autowired
+    private CursoService cursoService;
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
@@ -42,6 +45,7 @@ public class AlunoController {
     @GetMapping("/criar")
     public String criarForm(Model model) {
         model.addAttribute("aluno", new Aluno());
+        model.addAttribute("cursos", cursoService.findAll());
         return "aluno/formularioAluno";
     }
 
@@ -56,6 +60,7 @@ public class AlunoController {
     @GetMapping("/editar/{id}")
     public String editarForm(@PathVariable Integer id, Model model) {
         Aluno aluno = alunoService.findById(id);
+        model.addAttribute("cursos", cursoService.findAll());
         model.addAttribute("aluno", aluno);
         return "aluno/formularioAluno";
     }

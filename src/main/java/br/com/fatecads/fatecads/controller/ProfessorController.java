@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import br.com.fatecads.fatecads.entity.Aluno;
 import br.com.fatecads.fatecads.entity.Professor;
-import br.com.fatecads.fatecads.service.AlunoService;
 import br.com.fatecads.fatecads.service.ProfessorService;
 
 

@@ -9,12 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import br.com.fatecads.fatecads.entity.Aluno;
 import br.com.fatecads.fatecads.entity.Disciplina;
-import br.com.fatecads.fatecads.service.AlunoService;
+import br.com.fatecads.fatecads.service.CursoService;
 import br.com.fatecads.fatecads.service.DisciplinaService;
+import br.com.fatecads.fatecads.service.ProfessorService;
 
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -25,6 +24,12 @@ public class DisciplinaController {
     // Injeção de dependêccia da service de alunos
     @Autowired
     private DisciplinaService disciplinaService;
+
+    @Autowired
+    private CursoService cursoService;
+
+    @Autowired
+    private ProfessorService professorService;
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
@@ -44,6 +49,8 @@ public class DisciplinaController {
     @GetMapping("/criar")
     public String criarForm(Model model) {
         model.addAttribute("disciplina", new Disciplina());
+        model.addAttribute("cursos", cursoService.findAll());
+        model.addAttribute("professores", professorService.findAll());
         return "disciplina/formularioDisciplina";
     }
 
@@ -58,6 +65,8 @@ public class DisciplinaController {
     @GetMapping("/editar/{id}")
     public String editarForm(@PathVariable Integer id, Model model) {
         Disciplina disciplina = disciplinaService.findById(id);
+        model.addAttribute("cursos", cursoService.findAll());
+        model.addAttribute("professores", professorService.findAll());
         model.addAttribute("disciplina", disciplina);
         return "disciplina/formularioDisciplina";
     }
