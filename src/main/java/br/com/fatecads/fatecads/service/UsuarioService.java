@@ -35,7 +35,7 @@ public class UsuarioService {
         return usuarioRepository.findById(id).orElse(null);
     }
 
-    // public void deleteById(Integer id){
-    //     usuarioRepository.deleteById(id);
-    // }
+    public void deleteById(Integer id){
+        usuarioRepository.deleteById(id);
+    }
 } 
