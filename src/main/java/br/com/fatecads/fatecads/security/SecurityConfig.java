@@ -18,11 +18,12 @@ public class SecurityConfig {
                                 
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers(
-                                                                "/login",
-                                                                "/fatecads",
-                                                                "/css/**",
-                                                                "/images/**",
-                                                                "/usuarios/**")
+    "/login",
+    "/fatecads",
+    "/css/**",
+    "/images/**",
+    "/usuarios/**",
+    "/recuperacao/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .formLogin(form -> form
