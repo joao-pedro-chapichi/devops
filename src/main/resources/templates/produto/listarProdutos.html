@@ -19,7 +19,7 @@
             <th>Marca</th>
             <th colspan="2">Ações</th>
         </tr>
-        <tr th:each="produto : ${produto}">
+        <tr th:each="produto : ${produtos}">
             <td th:text="${produto.descricaoProduto}"></td>
             <td th:text="${produto.valorProduto}"></td>
             <td th:text="${produto.unidadeProduto}"></td>
