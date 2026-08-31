@@ -4,185 +4,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário de Pedidos</title>
+    <title>Cadastro de Pedido</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 30px 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 700px;
+            max-width: 90%;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 20px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-weight: bold;
+            color: #555;
+            margin-top: 25px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .voltar {
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #555;
+        }
+
+        .voltar:hover {
+            text-decoration: underline;
+        }
+
+        .botao-adicionar {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .botao-adicionar:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .empty-row {
+            color: #666;
+        }
+
+        .btn-remove {
+            background-color: #dc3545;
+            border: none;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-remove:hover {
+            background-color: #c82333;
+        }
+
+        .total {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #totalPedido {
+            color: #007bff;
+        }
+
+        .botao-salvar {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+
+        .botao-salvar:hover {
+            background-color: #0056b3;
+        }
+
+        .quantidade-tabela {
+            width: 60px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .quantidade-tabela:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+    </style>
+
 </head>
 
 <body>
-    <h1 style="text-align: center;">Formulário de Pedidos</h1>
 
-    <datalist id="listaAlunos">
-        <option th:each="aluno : ${alunos}" th:value="${aluno.idAluno + ' - ' + aluno.nomeAluno}">
-        </option>
-    </datalist>
+    <div class="container">
 
-    <datalist id="listaProdutos">
-    <option th:each="produto : ${produtos}"
-            th:value="${produto.idProduto + ' - ' + produto.descricaoProduto}"
-            th:attr="data-preco=${produto.valorProduto}">
-    </option>
-</datalist>
+        <h1>Cadastro de Pedido</h1>
 
-    <h1>Cadastro de Pedido</h1>
-    <a th:href="@{/home}">Votar</a>
+        <a th:href="@{/home}" class="voltar">Voltar</a>
 
-    <p>I. Identificação de Aluno</p>
-    <label for="aluno">Aluno</label>
+        <datalist id="listaAlunos">
+            <option th:each="aluno : ${alunos}" th:value="${aluno.idAluno + ' - ' + aluno.nomeAluno}">
+            </option>
+        </datalist>
 
-    <br />
-    <input list="listaAlunos" id="aluno" type="text" placeholder="Digite o nome ou código do aluno">
-    <br /><br />
-    <p>II. Adicionar produto ao pedido</p>
+        <datalist id="listaProdutos">
+            <option th:each="produto : ${produtos}" th:value="${produto.idProduto + ' - ' + produto.descricaoProduto}"
+                th:attr="data-preco=${produto.valorProduto}">
+            </option>
+        </datalist>
 
-    <label for="produto">Produto</label>
-    <input type="text" placeholder="Digite o produto" id="produto" list="listaProdutos">
-    <br><br>
 
-    <label for="quantidade">Quantidade</label>
-    <input type="number" id="quantidade" placeholder="0" min="1">
-    <br />
-    <button type="button" onclick="adicionarItem()">
-        <span>+</span>Adicionar
-    </button>
+        <p>I. Identificação de Aluno</p>
 
-    <!-- Tabela de Itens -->
-    <table>
-        <thead>
-            <tr>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Preço Unit.</th>
-                <th>Subtotal</th>
-                <th>Ação</th>
-            </tr>
-        </thead>
-        <tbody id="tabela-itens">
-            <tr id="empty-row">
-                <td colspan="5">Nenhum produto adicionado ao pedido</td>
-            </tr>
-        </tbody>
-    </table>
-    <span>Total do Pedido</span>
-    <span id="totalPedido">R$>0,00</span>
-    <br><br>
-    <button onclick="salvarPedido()">Confirmar e salvar pedido</button>
+        <label for="aluno">Aluno</label>
+        <input list="listaAlunos" id="aluno" type="text" placeholder="Digite o nome ou código do aluno">
+
+
+        <p>II. Adicionar produto ao pedido</p>
+
+        <label for="produto">Produto</label>
+        <input type="text" placeholder="Digite o produto" id="produto" list="listaProdutos">
+
+
+        <label for="quantidade">Quantidade</label>
+        <input type="number" id="quantidade" placeholder="0" min="1">
+
+
+        <button type="button" class="botao-adicionar" onclick="adicionarItem()">
+            + Adicionar
+        </button>
+
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unit.</th>
+                    <th>Subtotal</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+
+            <tbody id="tabela-itens">
+
+                <tr id="empty-row" class="empty-row">
+                    <td colspan="5">
+                        Nenhum produto adicionado ao pedido
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <div class="total">
+            <span>Total do Pedido:</span>
+            <span id="totalPedido">R$ 0,00</span>
+        </div>
+
+
+        <button type="button" class="botao-salvar" onclick="salvarPedido()">
+            Confirmar e salvar pedido
+        </button>
+
+    </div>
+
 
     <script>
+
         let itens = [];
 
+
         function adicionarItem() {
+
             let produtoInput = document.getElementById("produto").value;
             let quantidade = document.getElementById("quantidade").value;
 
             if (!produtoInput || quantidade <= 0) {
+
                 alert("Preencha corretamente o produto e a quantidade!");
+
                 return;
             }
 
+
             let partes = produtoInput.split(" - ");
+
             let produtoId = partes[0];
             let produtoNome = partes[1];
 
+
             let options = document.querySelectorAll("#listaProdutos option");
+
             let preco = null;
 
+
             options.forEach(opt => {
+
                 if (opt.value === produtoInput) {
+
                     preco = opt.getAttribute("data-preco");
+
                 }
+
             });
 
+
             if (!preco) {
+
                 alert("Produto inválido! Selecione um produto da lista.");
+
                 return;
             }
+
 
             let subtotal = quantidade * preco;
 
+
             itens.push({
-                produto: { idProduto: produtoId },
+
+                produto: {
+                    idProduto: produtoId
+                },
+
                 nomeProduto: produtoNome,
+
                 quantidade: parseInt(quantidade),
+
                 preco: parseFloat(preco),
+
                 subtotal: subtotal
+
             });
 
+
             document.getElementById("produto").value = "";
+
             document.getElementById("quantidade").value = "";
 
+
             renderTabela();
+
         }
+
 
         function removerItem(index) {
+
             itens.splice(index, 1);
+
             renderTabela();
+
         }
 
+        function alterarQuantidade(index, novaQuantidade) {
+
+            novaQuantidade = parseInt(novaQuantidade);
+
+
+            if (novaQuantidade <= 0 || isNaN(novaQuantidade)) {
+
+                alert("A quantidade deve ser maior que zero!");
+
+                renderTabela();
+
+                return;
+            }
+
+
+            itens[index].quantidade = novaQuantidade;
+
+
+            itens[index].subtotal =
+                itens[index].quantidade * itens[index].preco;
+
+
+            renderTabela();
+
+        }
+
+
+
         function renderTabela() {
+
             let tabela = document.getElementById("tabela-itens");
-            let emptyRow = document.getElementById("empty-row");
 
             tabela.innerHTML = "";
 
+
             if (itens.length === 0) {
-                tabela.innerHTML = `<tr class="empty-row" id="empty-row"><td colspan="5">Nenhum produto adicionado ao pedido.</td></tr>`;
-                document.getElementById("totalPedido").innerText = "0,00";
+
+                tabela.innerHTML = `
+            <tr class="empty-row" id="empty-row">
+                <td colspan="5">
+                    Nenhum produto adicionado ao pedido
+                </td>
+            </tr>
+        `;
+
+                document.getElementById("totalPedido").innerText =
+                    "R$ 0,00";
+
                 return;
             }
+
 
             let total = 0;
 
+
             itens.forEach((item, index) => {
+
                 total += item.subtotal;
+
+
                 tabela.innerHTML += `
-<tr>
-<td>${item.nomeProduto}</td>
-<td>${item.quantidade}</td>
-<td>R$ ${item.preco.toFixed(2).replace('.', ',')}</td>
-<td>R$ ${item.subtotal.toFixed(2).replace('.', ',')}</td>
-<td><button class="btn-remove" onclick="removerItem(${index})">Remover</button></td>
-</tr>
-                `;
+
+            <tr>
+
+                <td>
+                    ${item.nomeProduto}
+                </td>
+
+                <td>
+                    <input 
+                        type="number"
+                        class="quantidade-tabela"
+                        value="${item.quantidade}"
+                        min="1"
+                        onchange="alterarQuantidade(${index}, this.value)"
+                    >
+                </td>
+
+                <td>
+                    R$ ${item.preco
+                        .toFixed(2)
+                        .replace('.', ',')}
+                </td>
+
+                <td>
+                    R$ ${item.subtotal
+                        .toFixed(2)
+                        .replace('.', ',')}
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="btn-remove"
+                        onclick="removerItem(${index})">
+
+                        Remover
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
             });
 
-            document.getElementById("totalPedido").innerText = total.toFixed(2).replace('.', ',');
+
+            document.getElementById("totalPedido").innerText =
+                "R$ " + total.toFixed(2).replace('.', ',');
+
         }
+
+
 
         function salvarPedido() {
-            let alunoInput = document.getElementById("aluno").value;
+
+            let alunoInput =
+                document.getElementById("aluno").value;
+
 
             if (!alunoInput) {
+
                 alert("Selecione um aluno antes de salvar!");
+
                 return;
             }
+
 
             if (itens.length === 0) {
+
                 alert("Adicione ao menos um produto ao pedido!");
+
                 return;
             }
 
-            let alunoId = alunoInput.split(" - ")[0];
+
+            let alunoId =
+                alunoInput.split(" - ")[0];
+
 
             let pedido = {
-                cliente: { idAluno: alunoId },
+
+                cliente: {
+                    idAluno: alunoId
+                },
+
                 itens: itens
+
             };
 
+
             fetch("/pedidos", {
+
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
                 body: JSON.stringify(pedido)
+
             })
+
                 .then(res => res.json())
+
                 .then(data => {
+
                     alert("Pedido salvo com sucesso!");
+
                     location.reload();
+
                 })
+
                 .catch(err => {
-                    alert("Erro ao salvar o pedido. Tente novamente.");
+
+                    alert(
+                        "Erro ao salvar o pedido. Tente novamente."
+                    );
+
                     console.error(err);
+
                 });
+
         }
+
     </script>
+
 </body>
 
 </html>

@@ -80,6 +80,12 @@
         .voltar:hover {
             text-decoration: underline;
         }
+
+        input[type="file"] {
+            width: 100%;
+            margin-top: 8px;
+            box-sizing: border-box;
+        }
     </style>
 
 </head>
@@ -90,37 +96,24 @@
 
         <h1>Cadastro de Produtos</h1>
 
-        <form th:action="@{/produtos/salvar}" method="post" th:object="${produto}">
+        <form th:action="@{/produtos/salvar}" method="post" th:object="${produto}" enctype="multipart/form-data">
 
             <input type="hidden" name="idProduto" th:field="*{idProduto}">
 
             <label for="descricaoProduto">Descrição do Produto</label>
-            <input type="text"
-                   name="descricaoProduto"
-                   id="descricaoProduto"
-                   th:field="*{descricaoProduto}"
-                   required>
+            <input type="text" name="descricaoProduto" id="descricaoProduto" th:field="*{descricaoProduto}" required>
 
             <label for="valorProduto">Valor do Produto</label>
-            <input type="text"
-                   name="valorProduto"
-                   id="valorProduto"
-                   th:field="*{valorProduto}"
-                   required>
+            <input type="text" name="valorProduto" id="valorProduto" th:field="*{valorProduto}" required>
 
             <label for="unidadeProduto">Unidade</label>
-            <input type="text"
-                   name="unidadeProduto"
-                   id="unidadeProduto"
-                   th:field="*{unidadeProduto}"
-                   required>
+            <input type="text" name="unidadeProduto" id="unidadeProduto" th:field="*{unidadeProduto}" required>
 
             <label for="marcaProduto">Marca</label>
-            <input type="text"
-                   name="marcaProduto"
-                   id="marcaProduto"
-                   th:field="*{marcaProduto}"
-                   required>
+            <input type="text" name="marcaProduto" id="marcaProduto" th:field="*{marcaProduto}" required>
+
+            <label for="imagem">Imagem do Produto</label>
+            <input type="file" name="imagem" id="imagem" accept="image/*">
 
             <input type="submit" value="Salvar Produto" class="botao">
 
