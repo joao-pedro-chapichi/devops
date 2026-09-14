@@ -1,6 +1,7 @@
 package br.com.fatecads.fatecads.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +25,20 @@ public class UsuarioController {
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Usuario usuario) {
+    public String salvar(@ModelAttribute Usuario usuario, Authentication authentication) {
+        boolean admin = ehAdmin(authentication);
+
+        // Cadastro público nunca pode escolher privilégios administrativos.
+        if (!admin) {
+            if (usuario.getIdUsuario() != null) {
+                return "redirect:/login";
+            }
+            usuario.setRole("ROLE_USER");
+        } else if (!"ROLE_ADMIN".equals(usuario.getRole())) {
+            usuario.setRole("ROLE_USER");
+        }
         usuarioService.save(usuario);
-        return "/login";
+        return admin ? "redirect:/usuarios/listar" : "redirect:/login";
     }   
 
     // Método para listar todos os alunos
@@ -39,8 +51,9 @@ public class UsuarioController {
 
     // Método para criar um novo aluno e abrir um novo formulário
     @GetMapping("/criar")
-    public String criarForm(Model model) {
+    public String criarForm(Model model, Authentication authentication) {
         model.addAttribute("usuario", new Usuario());
+        model.addAttribute("podeDefinirRole", ehAdmin(authentication));
         return "usuario/formularioUsuario";
     }
 
@@ -53,10 +66,17 @@ public class UsuarioController {
     
     // Método para editar um aluno pelo ID
     @GetMapping("/editar/{id}")
-    public String editarForm(@PathVariable Integer id, Model model) {
+    public String editarForm(@PathVariable Integer id, Model model, Authentication authentication) {
         Usuario usuario = usuarioService.findById(id);
         model.addAttribute("usuario", usuario);
+        model.addAttribute("podeDefinirRole", ehAdmin(authentication));
         return "usuario/formularioUsuario";
+    }
+
+    private boolean ehAdmin(Authentication authentication) {
+        return authentication != null && authentication.isAuthenticated()
+                && authentication.getAuthorities().stream()
+                        .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
     }
     
 }

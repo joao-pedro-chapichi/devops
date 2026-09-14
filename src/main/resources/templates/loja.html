@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja | FatecADS</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f3f7fc; color: #172033; }
+        header { background: linear-gradient(135deg, #081b33, #0d47a1); color: #fff; padding: 20px max(5%, 24px); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        header h1 { margin: 0; font-size: 25px; }
+        header p { margin: 5px 0 0; color: #cfe2ff; }
+        .logout { color: white; padding: 10px 14px; border: 1px solid #9ecaff; border-radius: 8px; text-decoration: none; font-weight: bold; }
+        main { max-width: 1250px; padding: 30px 20px; margin: auto; display: grid; grid-template-columns: 1fr 350px; gap: 24px; align-items: start; }
+        h2 { margin: 0 0 18px; font-size: 23px; }
+        .produtos { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
+        .produto { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 17px #173d6a18; display: flex; flex-direction: column; }
+        .produto img, .sem-imagem { width: 100%; height: 145px; object-fit: cover; background: #e7eef8; }
+        .sem-imagem { display: grid; place-items: center; color: #62738c; }
+        .produto-info { padding: 15px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+        .produto h3 { margin: 0; font-size: 17px; }
+        .marca { margin: 0; color: #63728a; font-size: 13px; }
+        .preco { font-size: 20px; color: #047857; font-weight: bold; margin-top: auto; }
+        .controles { display: flex; gap: 8px; }
+        input[type=number] { width: 64px; border: 1px solid #bdcae0; border-radius: 7px; padding: 8px; font-size: 15px; }
+        button { border: 0; border-radius: 7px; cursor: pointer; font-weight: bold; }
+        .adicionar { flex: 1; color: white; background: #0d63c8; padding: 10px; }
+        .carrinho { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 4px 17px #173d6a18; position: sticky; top: 16px; }
+        .item { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 12px 0; border-bottom: 1px solid #e6ebf2; }
+        .item-nome { font-weight: bold; font-size: 14px; }
+        .item-preco { font-size: 13px; color: #596a82; margin-top: 4px; }
+        .qtd { display: flex; align-items: center; gap: 5px; }
+        .qtd button, .remover { background: #e7eef8; color: #123d75; width: 26px; height: 26px; font-size: 17px; }
+        .remover { background: #ffe2e2; color: #b42318; margin-left: 8px; font-size: 14px; }
+        .vazio { color: #63728a; text-align: center; padding: 24px 0; }
+        .total { display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; margin: 19px 0 12px; }
+        .finalizar, .limpar { width: 100%; padding: 12px; color: white; background: #07865f; }
+        .limpar { margin-top: 9px; color: #334155; background: #e7eef8; }
+        .mensagem { margin: 0 0 15px; padding: 10px; border-radius: 7px; display: none; }
+        .sucesso { background: #d7f5e7; color: #05603e; } .erro { background: #ffe3e3; color: #a61b1b; }
+        @media (max-width: 850px) { main { grid-template-columns: 1fr; } .carrinho { position: static; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div><h1>🛍️ Loja FatecADS</h1><p>Escolha seus produtos e monte o seu carrinho.</p></div>
+        <a class="logout" th:href="@{/logout}">Sair</a>
+    </header>
+    <main>
+        <section>
+            <h2>Produtos disponíveis</h2>
+            <div class="produtos">
+                <article class="produto" th:each="produto : ${produtos}">
+                    <img th:if="${produto.imagemProduto != null}" th:src="@{/produtos/imagem/{id}(id=${produto.idProduto})}" alt="Imagem do produto">
+                    <div th:unless="${produto.imagemProduto != null}" class="sem-imagem">Sem imagem</div>
+                    <div class="produto-info">
+                        <h3 th:text="${produto.descricaoProduto}">Produto</h3>
+                        <p class="marca" th:text="${produto.marcaProduto + ' • ' + produto.unidadeProduto}">Marca</p>
+                        <div class="preco" th:text="${'R$ ' + #numbers.formatDecimal(produto.valorProduto, 1, 2, 'COMMA')}">R$ 0,00</div>
+                        <div class="controles">
+                            <input type="number" min="1" value="1" th:id="${'qtd-' + produto.idProduto}">
+                            <button class="adicionar" th:attr="data-id=${produto.idProduto},data-nome=${produto.descricaoProduto},data-preco=${produto.valorProduto}" onclick="adicionar(this)">Adicionar</button>
+                        </div>
+                    </div>
+                </article>
+                <p th:if="${#lists.isEmpty(produtos)}">Nenhum produto foi cadastrado ainda.</p>
+            </div>
+        </section>
+        <aside class="carrinho">
+            <h2>🛒 Meu carrinho</h2>
+            <div id="mensagem" class="mensagem"></div>
+            <div id="itens"></div>
+            <div class="total"><span>Total</span><span id="total">R$ 0,00</span></div>
+            <button class="finalizar" onclick="finalizar()">Finalizar compra</button>
+            <button class="limpar" onclick="limpar()">Limpar carrinho</button>
+        </aside>
+    </main>
+    <script>
+        const CHAVE = 'fatecads-carrinho';
+        let carrinho = JSON.parse(localStorage.getItem(CHAVE) || '[]');
+        const moeda = valor => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const salvar = () => localStorage.setItem(CHAVE, JSON.stringify(carrinho));
+        function adicionar(botao) {
+            const id = Number(botao.dataset.id);
+            const quantidade = Number(document.getElementById('qtd-' + id).value);
+            if (!Number.isInteger(quantidade) || quantidade < 1) return mostrar('Informe uma quantidade válida.', true);
+            const existente = carrinho.find(item => item.id === id);
+            if (existente) existente.quantidade += quantidade;
+            else carrinho.push({ id, nome: botao.dataset.nome, preco: Number(botao.dataset.preco), quantidade });
+            salvar(); renderizar(); mostrar('Produto adicionado ao carrinho.');
+        }
+        function alterar(id, diferenca) {
+            const item = carrinho.find(item => item.id === id); item.quantidade += diferenca;
+            if (item.quantidade < 1) carrinho = carrinho.filter(item => item.id !== id);
+            salvar(); renderizar();
+        }
+        function remover(id) { carrinho = carrinho.filter(item => item.id !== id); salvar(); renderizar(); }
+        function limpar() { carrinho = []; salvar(); renderizar(); }
+        function renderizar() {
+            const lista = document.getElementById('itens'); lista.innerHTML = '';
+            if (!carrinho.length) lista.innerHTML = '<p class="vazio">Seu carrinho está vazio.</p>';
+            carrinho.forEach(item => {
+                const linha = document.createElement('div'); linha.className = 'item';
+                linha.innerHTML = `<div><div class="item-nome"></div><div class="item-preco">${moeda(item.preco)} cada</div></div><div class="qtd"><button aria-label="Diminuir">−</button><strong>${item.quantidade}</strong><button aria-label="Aumentar">+</button><button class="remover" aria-label="Remover">×</button></div>`;
+                linha.querySelector('.item-nome').textContent = item.nome;
+                const botoes = linha.querySelectorAll('button'); botoes[0].onclick = () => alterar(item.id, -1); botoes[1].onclick = () => alterar(item.id, 1); botoes[2].onclick = () => remover(item.id);
+                lista.appendChild(linha);
+            });
+            document.getElementById('total').textContent = moeda(carrinho.reduce((total, item) => total + item.preco * item.quantidade, 0));
+        }
+        function mostrar(texto, erro = false) { const el = document.getElementById('mensagem'); el.textContent = texto; el.className = 'mensagem ' + (erro ? 'erro' : 'sucesso'); el.style.display = 'block'; }
+        async function finalizar() {
+            if (!carrinho.length) return mostrar('Adicione pelo menos um produto antes de finalizar.', true);
+            const resposta = await fetch('/compras/finalizar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itens: carrinho.map(item => ({ quantidade: item.quantidade, produto: { idProduto: item.id } })) }) });
+            const dados = await resposta.json();
+            if (!resposta.ok) return mostrar(dados.erro || 'Não foi possível finalizar a compra.', true);
+            limpar(); mostrar(`${dados.mensagem} Pedido #${dados.pedidoId}.`);
+        }
+        renderizar();
+    </script>
+</body>
+</html>

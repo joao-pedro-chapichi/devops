@@ -35,6 +35,10 @@ public class Pedido {
     @JoinColumn(name = "idAluno_fk")
     private Aluno aluno;
 
+    @ManyToOne
+    @JoinColumn(name = "idUsuario_fk")
+    private Usuario usuario;
+
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<ItemDoPedido> itens;
 

@@ -161,7 +161,8 @@
 
         input[type="text"],
         input[type="email"],
-        input[type="password"] {
+        input[type="password"],
+        select {
             width: 100%;
 
             padding: 14px 15px;
@@ -184,6 +185,10 @@
                 border-color 0.25s ease,
                 box-shadow 0.25s ease,
                 background 0.25s ease;
+        }
+
+        select {
+            background: #17375d;
         }
 
         input::placeholder {
@@ -374,6 +379,17 @@
                 placeholder="Crie uma senha"
                 required
             >
+
+            <div th:if="${podeDefinirRole}">
+                <label for="role">
+                    Tipo de usuário
+                </label>
+
+                <select id="role" th:field="*{role}">
+                    <option value="ROLE_USER">Usuário normal — acessa a loja</option>
+                    <option value="ROLE_ADMIN">Administrador — acessa o sistema completo</option>
+                </select>
+            </div>
 
             <input
                 type="submit"

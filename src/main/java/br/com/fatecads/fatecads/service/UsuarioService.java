@@ -35,6 +35,11 @@ public class UsuarioService {
         return usuarioRepository.findById(id).orElse(null);
     }
 
+    public Usuario findByLogin(String login) {
+        return usuarioRepository.findByLoginUsuario(login)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário autenticado não encontrado."));
+    }
+
     public void deleteById(Integer id){
         usuarioRepository.deleteById(id);
     }
