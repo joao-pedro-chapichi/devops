@@ -1,116 +1,386 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cadastro de Cursos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
+    <title>Cadastro de Cursos</title>
 
-body{
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #f4f6f9;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-.container{
-    background-color: white;
-    padding: 35px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    width: 350px;
-}
+        body {
+            font-family: Arial, Helvetica, sans-serif;
 
-h1{
-    text-align: center;
-    margin-bottom: 25px;
-    color: #333;
-}
+            min-height: 100vh;
 
-label{
-    font-weight: bold;
-    display: block;
-    margin-top: 15px;
-}
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-input[type="text"]{
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    transition: 0.2s;
-}
+            padding: 30px 15px;
 
-input[type="text"]:focus{
-    border-color: #007bff;
-    outline: none;
-}
+            background:
+                radial-gradient(circle at top left, #4f8cff 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #00b4d8 0%, transparent 30%),
+                linear-gradient(135deg, #081b33, #0d47a1);
 
-.botao{
-    width: 100%;
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #007bff;
-    border: none;
-    color: white;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-}
+            overflow-x: hidden;
+        }
 
-.botao:hover{
-    background-color: #0056b3;
-}
+        body::before,
+        body::after {
+            content: "";
 
-.voltar{
-    display: block;
-    text-align: center;
-    margin-top: 15px;
-    text-decoration: none;
-    color: #555;
-}
+            position: fixed;
 
-.voltar:hover{
-    text-decoration: underline;
-}
+            border-radius: 50%;
 
-</style>
+            filter: blur(12px);
+
+            opacity: 0.3;
+
+            pointer-events: none;
+        }
+
+        body::before {
+            width: 300px;
+            height: 300px;
+
+            background: #00d4ff;
+
+            top: -100px;
+            right: -80px;
+        }
+
+        body::after {
+            width: 250px;
+            height: 250px;
+
+            background: #6c63ff;
+
+            bottom: -100px;
+            left: -80px;
+        }
+
+        .container {
+            position: relative;
+
+            z-index: 1;
+
+            width: 420px;
+
+            padding: 45px 40px;
+
+            background: rgba(255, 255, 255, 0.12);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+            border-radius: 24px;
+
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+            animation: aparecer 0.7s ease;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 20px;
+
+            background: linear-gradient(135deg, #2196f3, #00c6ff);
+
+            font-size: 32px;
+
+            box-shadow: 0 10px 30px rgba(0, 198, 255, 0.35);
+        }
+
+        h1 {
+            text-align: center;
+
+            color: white;
+
+            font-size: 30px;
+
+            margin-bottom: 8px;
+        }
+
+        .subtitulo {
+            text-align: center;
+
+            color: rgba(255, 255, 255, 0.65);
+
+            font-size: 15px;
+
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 7px;
+
+            color: rgba(255, 255, 255, 0.85);
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            margin-bottom: 18px;
+
+            border-radius: 10px;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+            background: rgba(255, 255, 255, 0.08);
+
+            color: white;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition:
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #42a5f5;
+
+            background: rgba(255, 255, 255, 0.13);
+
+            box-shadow:
+                0 0 0 3px rgba(33, 150, 243, 0.15),
+                0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .botao {
+            width: 100%;
+
+            padding: 15px;
+
+            margin-top: 5px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            color: white;
+
+            background: linear-gradient(135deg, #2196f3, #0077ff);
+
+            box-shadow: 0 8px 22px rgba(0, 119, 255, 0.3);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .botao:hover {
+            transform: translateY(-3px);
+
+            box-shadow: 0 12px 28px rgba(0, 119, 255, 0.45);
+        }
+
+        .botao:active {
+            transform: translateY(0);
+        }
+
+        .linha {
+            height: 1px;
+
+            margin: 25px 0 20px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.25),
+                transparent
+            );
+        }
+
+        .voltar {
+            display: block;
+
+            width: 100%;
+
+            padding: 14px;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            color: white;
+
+            border-radius: 12px;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+            transition:
+                background 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .voltar:hover {
+            background: rgba(255, 255, 255, 0.15);
+
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 460px) {
+            .container {
+                width: 100%;
+
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
 
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-<h1>Cadastro de Cursos</h1>
+        <div class="logo">
+            📚
+        </div>
 
-<form th:action="@{/cursos/salvar}" method="post" th:object="${curso}">
+        <h1>Cadastro de Cursos</h1>
 
-<input type="hidden" th:field="*{idCurso}">
+        <p class="subtitulo">
+            Cadastre ou atualize os dados do curso
+        </p>
 
-<label>Nome:</label>
-<input type="text" th:field="*{nomeCurso}" required>
+        <form
+            th:action="@{/cursos/salvar}"
+            method="post"
+            th:object="${curso}"
+        >
 
-<label>Período:</label>
-<input type="text" th:field="*{periodoCurso}" required>
+            <input
+                type="hidden"
+                th:field="*{idCurso}"
+            >
 
-<label>Carga Horária:</label>
-<input type="text" th:field="*{cargaHorariaCurso}" required>
+            <label for="nomeCurso">
+                Nome
+            </label>
 
-<input type="submit" value="Salvar" class="botao">
+            <input
+                type="text"
+                id="nomeCurso"
+                th:field="*{nomeCurso}"
+                placeholder="Digite o nome do curso"
+                required
+            >
 
-</form>
+            <label for="periodoCurso">
+                Período
+            </label>
 
-<a href="/cursos/listar" class="voltar">Voltar para lista</a>
+            <input
+                type="text"
+                id="periodoCurso"
+                th:field="*{periodoCurso}"
+                placeholder="Ex: Noturno"
+                required
+            >
 
-</div>
+            <label for="cargaHorariaCurso">
+                Carga Horária
+            </label>
+
+            <input
+                type="number"
+                id="cargaHorariaCurso"
+                th:field="*{cargaHorariaCurso}"
+                placeholder="Ex: 2800"
+                min="1"
+                required
+            >
+
+            <input
+                type="submit"
+                value="Salvar Curso"
+                class="botao"
+            >
+
+        </form>
+
+        <div class="linha"></div>
+
+        <a
+            href="/cursos/listar"
+            class="voltar"
+        >
+            Voltar para lista
+        </a>
+
+    </div>
 
 </body>
+
 </html>

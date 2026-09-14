@@ -4,123 +4,447 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Usuario</title>
+
+    <title>Lista de Usuários</title>
 
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f4f6f9;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+
+            min-height: 100vh;
+
+            background:
+                radial-gradient(circle at top left, #4f8cff 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #00b4d8 0%, transparent 30%),
+                linear-gradient(135deg, #081b33, #0d47a1);
+
+            color: white;
+
+            padding: 40px 20px;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+
+            position: fixed;
+
+            border-radius: 50%;
+
+            filter: blur(15px);
+
+            opacity: 0.3;
+
+            pointer-events: none;
+        }
+
+        body::before {
+            width: 300px;
+            height: 300px;
+
+            background: #00d4ff;
+
+            top: -100px;
+            right: -80px;
+        }
+
+        body::after {
+            width: 250px;
+            height: 250px;
+
+            background: #6c63ff;
+
+            bottom: -100px;
+            left: -80px;
+        }
+
+        .container {
+            position: relative;
+
+            z-index: 1;
+
+            max-width: 1200px;
+
+            margin: 0 auto;
+        }
+
+        .cabecalho {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 25px;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+        .titulo {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .icone {
+            width: 65px;
+            height: 65px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 18px;
+
+            background: linear-gradient(135deg, #2196f3, #00c6ff);
+
+            font-size: 30px;
+
+            box-shadow: 0 10px 30px rgba(0, 198, 255, 0.35);
         }
 
         h1 {
-            text-align: center;
-            margin-top: 30px;
-            color: #333;
+            font-size: 32px;
+
+            margin-bottom: 5px;
         }
 
-        h3 {
-            text-align: center;
-        }
+        .subtitulo {
+            color: rgba(255, 255, 255, 0.6);
 
-        h3 a {
-            text-decoration: none;
-            background-color: #28a745;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        h3 a:hover {
-            background-color: #218838;
-        }
-
-        table {
-            margin: 30px auto;
-            border-collapse: collapse;
-            width: 70%;
-            background-color: white;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        th,
-        td {
-            padding: 10px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        td a {
-            text-decoration: none;
-            padding: 6px 10px;
-            border-radius: 4px;
-            color: white;
             font-size: 14px;
         }
 
-        td a:first-child {
-            background-color: #ffc107;
+        .btn-novo {
+            text-decoration: none;
+
+            color: white;
+
+            font-weight: bold;
+
+            padding: 14px 20px;
+
+            border-radius: 12px;
+
+            background: linear-gradient(135deg, #2196f3, #0077ff);
+
+            box-shadow: 0 8px 20px rgba(0, 119, 255, 0.3);
+
+            transition: 0.25s;
         }
 
-        td a:first-child:hover {
-            background-color: #e0a800;
+        .btn-novo:hover {
+            transform: translateY(-3px);
+
+            box-shadow: 0 12px 28px rgba(0, 119, 255, 0.45);
         }
 
-        td a:last-child {
-            background-color: #dc3545;
+        .tabela-card {
+            background: rgba(255, 255, 255, 0.12);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+            border-radius: 22px;
+
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+
+            overflow: hidden;
         }
 
-        td a:last-child:hover {
-            background-color: #c82333;
+        .tabela-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 900px;
+        }
+
+        th {
+            background: rgba(0, 119, 255, 0.25);
+
+            color: white;
+
+            padding: 16px;
+
+            text-align: left;
+
+            font-size: 13px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.5px;
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        td {
+            padding: 15px 16px;
+
+            color: rgba(255, 255, 255, 0.82);
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .id {
+            color: #67c7ff;
+
+            font-weight: bold;
+        }
+
+        .role {
+            display: inline-block;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            background: rgba(33, 150, 243, 0.18);
+
+            border: 1px solid rgba(33, 150, 243, 0.3);
+
+            color: #8ed1ff;
+
+            font-weight: bold;
+
+            font-size: 12px;
+        }
+
+        .acoes {
+            display: flex;
+
+            gap: 8px;
+        }
+
+        .acoes a {
+            text-decoration: none;
+
+            color: white;
+
+            font-weight: bold;
+
+            padding: 8px 12px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            transition: 0.2s;
+        }
+
+        .acoes a:hover {
+            transform: translateY(-2px);
+        }
+
+        .editar {
+            background: linear-gradient(135deg, #ffb300, #ff8f00);
+        }
+
+        .excluir {
+            background: linear-gradient(135deg, #ef5350, #d32f2f);
+        }
+
+        .rodape {
+            margin-top: 20px;
+
+            text-align: center;
+
+            color: rgba(255, 255, 255, 0.4);
+
+            font-size: 12px;
+        }
+
+        @media (max-width: 700px) {
+            .cabecalho {
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+            .titulo {
+                justify-content: center;
+
+                text-align: center;
+            }
+
+            .btn-novo {
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
         }
     </style>
-
 </head>
 
 <body>
 
-    <h1>Lista de Usuario</h1>
+    <div class="container">
 
-    <h3>
-        <a href="/usuarios/criar">Criar novo usuario</a>
-    </h3>
+        <div class="cabecalho">
 
-    <table border="1">
-        <tr>
-            <th>Id</th>
-            <th>Nome</th>
-            <th>Email</th>
-            <th>Login</th>
-            <th>Senha</th>
-            <th>Role</th>
-            <th colspan="2">Ações</th>
-        </tr>
+            <div class="titulo">
 
-        <tr th:each="usuario : ${usuarios}">
-            <td th:text="${usuario.idUsuario}">*</td>
-            <td th:text="${usuario.nomeUsuario}">*</td>
-            <td th:text="${usuario.emailUsuario}">*</td>
-            <td th:text="${usuario.loginUsuario}">*</td>
-            <td th:text="${usuario.senhaUsuario}">*</td>
-            <td th:text="${usuario.role}">*</td>
+                <div class="icone">
+                    👥
+                </div>
 
-            <td>
-                <a th:href="@{/usuarios/editar/{id}(id=${usuario.idUsuario})}">Editar</a>
-                <a th:href="@{/usuarios/excluir/{id}(id=${usuario.idUsuario})}">Excluir</a>
-            </td>
-        </tr>
+                <div>
 
-    </table>
+                    <h1>Lista de Usuários</h1>
+
+                    <p class="subtitulo">
+                        Gerenciamento dos usuários cadastrados
+                    </p>
+
+                </div>
+
+            </div>
+
+            <a href="/usuarios/criar" class="btn-novo">
+                + Criar novo usuário
+            </a>
+
+        </div>
+
+        <div class="tabela-card">
+
+            <div class="tabela-scroll">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Nome</th>
+
+                            <th>Email</th>
+
+                            <th>Login</th>
+
+                            <th>Senha</th>
+
+                            <th>Role</th>
+
+                            <th>Ações</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr th:each="usuario : ${usuarios}">
+
+                            <td
+                                class="id"
+                                th:text="${usuario.idUsuario}"
+                            >
+                                *
+                            </td>
+
+                            <td
+                                th:text="${usuario.nomeUsuario}"
+                            >
+                                *
+                            </td>
+
+                            <td
+                                th:text="${usuario.emailUsuario}"
+                            >
+                                *
+                            </td>
+
+                            <td
+                                th:text="${usuario.loginUsuario}"
+                            >
+                                *
+                            </td>
+
+                            <td>
+                                ********
+                            </td>
+
+                            <td>
+
+                                <span
+                                    class="role"
+                                    th:text="${usuario.role}"
+                                >
+                                    *
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <div class="acoes">
+
+                                    <a
+                                        class="editar"
+                                        th:href="@{/usuarios/editar/{id}(id=${usuario.idUsuario})}"
+                                    >
+                                        Editar
+                                    </a>
+
+                                    <a
+                                        class="excluir"
+                                        th:href="@{/usuarios/excluir/{id}(id=${usuario.idUsuario})}"
+                                    >
+                                        Excluir
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div class="rodape">
+            FatecADS • Sistema Acadêmico
+        </div>
+
+    </div>
 
 </body>
 

@@ -6,89 +6,227 @@
     <title>FatecADS - Sistema Acadêmico</title>
 
     <style>
-
-        body{
-            font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(135deg, #004aad, #007bff);
-            height: 100vh;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            background:
+                radial-gradient(circle at top left, #4f8cff 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #00b4d8 0%, transparent 30%),
+                linear-gradient(135deg, #081b33, #0d47a1);
+            overflow: hidden;
         }
 
-        .container{
-            background-color: white;
-            padding: 50px 40px;
-            border-radius: 10px;
+        body::before,
+        body::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(10px);
+            opacity: 0.3;
+        }
+
+        body::before {
+            width: 300px;
+            height: 300px;
+            background: #00d4ff;
+            top: -100px;
+            right: -80px;
+        }
+
+        body::after {
+            width: 250px;
+            height: 250px;
+            background: #6c63ff;
+            bottom: -100px;
+            left: -80px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+
+            width: 390px;
+            padding: 45px 40px;
+
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
             text-align: center;
-            width: 350px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+
+            animation: aparecer 0.7s ease;
         }
 
-        h1{
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 32px;
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        h2{
-            color: #666;
-            margin-bottom: 35px;
-            font-size: 20px;
+        .logo {
+            width: 75px;
+            height: 75px;
+
+            margin: 0 auto 22px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 20px;
+
+            background: linear-gradient(135deg, #2196f3, #00c6ff);
+
+            font-size: 34px;
+
+            box-shadow: 0 10px 30px rgba(0, 198, 255, 0.35);
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 34px;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        h2 {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 17px;
             font-weight: normal;
+            margin-bottom: 35px;
         }
 
-        form{
-            margin-bottom: 15px;
+        form {
+            margin-bottom: 14px;
         }
 
-        button{
+        button {
             width: 100%;
-            background-color: #007bff;
-            color: white;
+            padding: 15px;
+
             border: none;
-            padding: 14px;
-            border-radius: 5px;
+            border-radius: 12px;
+
             font-size: 16px;
             font-weight: bold;
+
             cursor: pointer;
-            transition: 0.3s;
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+
+            background: linear-gradient(135deg, #2196f3, #0077ff);
+
+            color: white;
+
+            box-shadow: 0 8px 22px rgba(0, 119, 255, 0.3);
         }
 
-        button:hover{
-            background-color: #0056b3;
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(0, 119, 255, 0.45);
         }
 
-        .btn-cadastro{
-            background-color: #28a745;
+        button:active {
+            transform: translateY(0);
         }
 
-        .btn-cadastro:hover{
-            background-color: #1e7e34;
+        .btn-cadastro {
+            background: rgba(255, 255, 255, 0.09);
+
+            border: 1px solid rgba(255, 255, 255, 0.25);
+
+            box-shadow: none;
         }
 
+        .btn-cadastro:hover {
+            background: rgba(255, 255, 255, 0.17);
+
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .linha {
+            margin: 28px 0 20px;
+
+            height: 1px;
+
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.25),
+                transparent
+            );
+        }
+
+        .footer {
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 12px;
+        }
+
+        @media (max-width: 450px) {
+            .container {
+                width: calc(100% - 35px);
+                padding: 40px 25px;
+            }
+        }
     </style>
-
 </head>
+
 <body>
 
     <div class="container">
 
+        <div class="logo">
+            🎓
+        </div>
+
         <h1>FatecADS</h1>
-        <h2>Sistema Acadêmico</h2>
+
+        <h2>
+            Seu portal acadêmico
+        </h2>
 
         <form action="/login" method="get">
             <button type="submit">
-                Acesso ao Sistema
+                Entrar no Sistema
             </button>
         </form>
 
         <form action="/usuarios/criar" method="get">
             <button type="submit" class="btn-cadastro">
-                Cadastre-se
+                Criar uma Conta
             </button>
         </form>
+
+        <div class="linha"></div>
+
+        <div class="footer">
+            FatecADS • Sistema Acadêmico
+        </div>
 
     </div>
 
