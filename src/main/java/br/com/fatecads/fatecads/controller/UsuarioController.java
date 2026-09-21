@@ -25,21 +25,29 @@ public class UsuarioController {
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Usuario usuario, Authentication authentication) {
-        boolean admin = ehAdmin(authentication);
+public String salvar(@ModelAttribute Usuario usuario, Authentication authentication) {
+    boolean admin = ehAdmin(authentication);
 
-        // Cadastro público nunca pode escolher privilégios administrativos.
+    // Todo novo cadastro é usuário comum. O perfil não é definido pelo formulário.
+    if (usuario.getIdUsuario() == null) {
+        usuario.setRole("ROLE_USER");
+    } else {
+        // Somente um administrador pode editar uma conta e o perfil atual é preservado.
         if (!admin) {
-            if (usuario.getIdUsuario() != null) {
-                return "redirect:/login";
-            }
-            usuario.setRole("ROLE_USER");
-        } else if (!"ROLE_ADMIN".equals(usuario.getRole())) {
-            usuario.setRole("ROLE_USER");
+            return "redirect:/login";
         }
-        usuarioService.save(usuario);
-        return admin ? "redirect:/usuarios/listar" : "redirect:/login";
-    }   
+
+        Usuario usuarioExistente = usuarioService.findById(usuario.getIdUsuario());
+        if (usuarioExistente == null) {
+            return "redirect:/usuarios/listar";
+        }
+
+        usuario.setRole(usuarioExistente.getRole());
+    }
+
+    usuarioService.save(usuario);
+    return admin ? "redirect:/usuarios/listar" : "redirect:/login";
+}   
 
     // Método para listar todos os alunos
     @GetMapping("/listar")

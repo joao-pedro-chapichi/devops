@@ -380,17 +380,6 @@
                 required
             >
 
-            <div th:if="${podeDefinirRole}">
-                <label for="role">
-                    Tipo de usuário
-                </label>
-
-                <select id="role" th:field="*{role}">
-                    <option value="ROLE_USER">Usuário normal — acessa a loja</option>
-                    <option value="ROLE_ADMIN">Administrador — acessa o sistema completo</option>
-                </select>
-            </div>
-
             <input
                 type="submit"
                 value="Criar Conta"
