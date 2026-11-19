@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Getter
@@ -22,11 +23,14 @@ public class Curso {
     private Integer idCurso;
 
     @Column(nullable = false, length = 100)
+    @NotBlank @Size(max = 100) @Pattern(regexp = "^[^<>\\p{Cntrl}]+$")
     private String nomeCurso;
 
     @Column(nullable = false, length = 50)
+    @NotBlank @Size(max = 50) @Pattern(regexp = "^[^<>\\p{Cntrl}]+$")
     private String periodoCurso;
 
     @Column(nullable = false, length = 50)
+    @NotNull @Min(1) @Max(100000)
     private Integer cargaHorariaCurso;
 }

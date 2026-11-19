@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.*;
 
 @Entity
 @AllArgsConstructor
@@ -22,6 +23,7 @@ public class ItemDoPedido {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idItem;
 
+    @NotNull @Min(1) @Max(1000)
     private Integer quantidade;
     
     private Double preco;
@@ -34,6 +36,7 @@ public class ItemDoPedido {
 
     @ManyToOne
     @JoinColumn(name = "idProduto_fk")
+    @NotNull
     private Produto produto;
 
     // Método para calcular o subtotal

@@ -3,6 +3,8 @@ package br.com.fatecads.fatecads.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,22 +19,26 @@ import br.com.fatecads.fatecads.service.ProfessorService;
 @Controller
 @RequestMapping("/professores")
 public class ProfessorController {
-    
+
     // Injeção de dependêccia da service de alunos
     @Autowired
     private ProfessorService professorService;
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Professor professor) {
+    public String salvar(@Valid @ModelAttribute Professor professor, BindingResult erros, Model model) {
+        if (erros.hasErrors()) {
+
+            return "professor/formularioProfessor";
+        }
         professorService.save(professor);
         return "redirect:/professores/listar";
-    }   
+    }
 
     // Método para listar todos os alunos
     @GetMapping("/listar")
     public String listar(Model model) {
-        
+
         model.addAttribute("professores", professorService.findAll());
         return "professor/listarProfessor";
     }
@@ -50,7 +56,7 @@ public class ProfessorController {
         professorService.deleteById(id);
         return "redirect:/professores/listar";
     }
-    
+
     // Método para editar um aluno pelo ID
     @GetMapping("/editar/{id}")
     public String editarForm(@PathVariable Integer id, Model model) {
@@ -58,5 +64,5 @@ public class ProfessorController {
         model.addAttribute("professor", professor);
         return "professor/formularioProfessor";
     }
-    
+
 }

@@ -3,6 +3,8 @@ package br.com.fatecads.fatecads.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import br.com.fatecads.fatecads.entity.Curso;
@@ -18,29 +20,33 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @RequestMapping("/cursos")
 public class CursoController {
-    
+
     @Autowired
     private CursoService cursoService;
 
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Curso curso) {
+    public String salvar(@Valid @ModelAttribute Curso curso, BindingResult erros, Model model) {
+        if (erros.hasErrors()) {
+
+            return "curso/formularioCurso";
+        }
         cursoService.save(curso);
         return "redirect:/cursos/listar";
     }
 
     @GetMapping("/listar")
     public String listar(Model model) {
-        
+
         model.addAttribute("cursos", cursoService.findAll());
         return "curso/listarCurso";
     }
-    
+
     @GetMapping("/criar")
     public String criarForm(Model model) {
         model.addAttribute("curso", new Curso());
         return "curso/formularioCurso";
     }
-    
+
     @GetMapping("/excluir/{id}")
     public String excluir(@PathVariable Integer id) {
         cursoService.deleteById(id);

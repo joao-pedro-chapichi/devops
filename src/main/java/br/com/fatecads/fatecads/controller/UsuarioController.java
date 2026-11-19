@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +27,13 @@ public class UsuarioController {
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
-public String salvar(@ModelAttribute Usuario usuario, Authentication authentication) {
+public String salvar(@Valid @ModelAttribute Usuario usuario, BindingResult erros, Model model, Authentication authentication) {
     boolean admin = ehAdmin(authentication);
+
+    if (erros.hasErrors()) {
+        model.addAttribute("podeDefinirRole", admin);
+        return "usuario/formularioUsuario";
+    }
 
     // Todo novo cadastro é usuário comum. O perfil não é definido pelo formulário.
     if (usuario.getIdUsuario() == null) {

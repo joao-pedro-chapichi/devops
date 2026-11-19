@@ -3,6 +3,8 @@ package br.com.fatecads.fatecads.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +35,12 @@ public class DisciplinaController {
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Disciplina disciplina) {
+    public String salvar(@Valid @ModelAttribute Disciplina disciplina, BindingResult erros, Model model) {
+        if (erros.hasErrors()) {
+            model.addAttribute("cursos", cursoService.findAll());
+        model.addAttribute("professores", professorService.findAll());
+            return "disciplina/formularioDisciplina";
+        }
         disciplinaService.save(disciplina);
         return "redirect:/disciplinas/listar";
     }   

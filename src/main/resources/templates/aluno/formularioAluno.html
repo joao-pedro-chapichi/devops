@@ -354,6 +354,10 @@
             method="post"
             th:object="${aluno}"
         >
+            <div th:if="${#fields.hasErrors()}" role="alert" style="color:#fff;background:#a31935;padding:12px;margin:12px 0;border-radius:8px">
+                <p th:each="erro : ${#fields.errors()}" th:text="${erro}">Campo inválido</p>
+            </div>
+
 
             <input
                 type="hidden"
@@ -399,7 +403,7 @@
                         type="tel"
                         id="telefoneAluno"
                         th:field="*{telefoneAluno}"
-                        placeholder="(00) 00000-0000"
+                        placeholder="11999999999"
                         required
                     >
 
@@ -416,7 +420,7 @@
                         type="text"
                         id="cpfAluno"
                         th:field="*{cpfAluno}"
-                        placeholder="000.000.000-00"
+                        placeholder="00000000000"
                         required
                     >
 

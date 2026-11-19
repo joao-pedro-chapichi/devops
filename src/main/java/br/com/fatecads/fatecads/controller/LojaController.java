@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import br.com.fatecads.fatecads.entity.ItemDoPedido;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import br.com.fatecads.fatecads.entity.Produto;
 import br.com.fatecads.fatecads.security.UserDetailsImpl;
 import br.com.fatecads.fatecads.service.PedidoService;
@@ -39,7 +41,7 @@ public class LojaController {
     }
 
     @PostMapping("/compras/finalizar")
-    public ResponseEntity<Map<String, Object>> finalizar(@RequestBody CompraRequest compra,
+    public ResponseEntity<Map<String, Object>> finalizar(@Valid @RequestBody CompraRequest compra,
             @AuthenticationPrincipal UserDetailsImpl usuarioAutenticado) {
         if (compra.itens() == null || compra.itens().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("erro", "O carrinho está vazio."));
@@ -47,13 +49,13 @@ public class LojaController {
 
         try {
             var usuario = usuarioService.findByLogin(usuarioAutenticado.getUsername());
-            var pedido = pedidoService.salvarCompra(usuario, compra.itens());
+            var pedido = pedidoService.salvarCompra(usuario, compra.itens().stream().map(ItemRequest::paraEntidade).toList());
             return ResponseEntity.ok(Map.of("mensagem", "Compra realizada com sucesso!", "pedidoId", pedido.getIdPedido()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
 
-    public record CompraRequest(List<ItemDoPedido> itens) {
+    public record CompraRequest(@NotEmpty @Size(max = 100) List<@Valid ItemRequest> itens) {
     }
 }

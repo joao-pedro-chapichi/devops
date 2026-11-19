@@ -319,6 +319,10 @@
             method="post"
             th:object="${professor}"
         >
+            <div th:if="${#fields.hasErrors()}" role="alert" style="color:#fff;background:#a31935;padding:12px;margin:12px 0;border-radius:8px">
+                <p th:each="erro : ${#fields.errors()}" th:text="${erro}">Campo inválido</p>
+            </div>
+
 
             <input
                 type="hidden"

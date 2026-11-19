@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.constraints.*;
 
 @Entity
 @AllArgsConstructor
@@ -28,14 +29,18 @@ public class Produto {
     private Integer idProduto;
 
     @Column(nullable = false, length = 40)
+    @NotBlank @Size(max = 40) @Pattern(regexp = "^[^<>\\p{Cntrl}]+$")
     private String descricaoProduto;
 
+    @NotNull @DecimalMin("0.01") @DecimalMax("1000000.00")
     private Double valorProduto;
 
     @Column(nullable = false, length = 10)
+    @NotBlank @Size(max = 10) @Pattern(regexp = "^[^<>\\p{Cntrl}]+$")
     private String unidadeProduto;
 
     @Column(nullable = false, length = 30)
+    @NotBlank @Size(max = 30) @Pattern(regexp = "^[^<>\\p{Cntrl}]+$")
     private String marcaProduto;
 
     @Lob

@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import br.com.fatecads.fatecads.entity.Usuario;
 import br.com.fatecads.fatecads.repository.UsuarioRepository;
 import br.com.fatecads.fatecads.service.WhatsappService;
+import jakarta.validation.constraints.*;
+import org.springframework.validation.annotation.Validated;
 
 @RestController
+@Validated
 @RequestMapping("/recuperacao")
 public class RecuperacaoSenhaController {
 
@@ -26,7 +29,7 @@ public class RecuperacaoSenhaController {
 
     @PostMapping("/solicitar")
     public String solicitarCodigo(
-            @RequestParam String email) {
+            @RequestParam @NotBlank @Email @Size(max = 80) String email) {
 
         Usuario usuario =
                 usuarioRepository
@@ -58,9 +61,9 @@ public class RecuperacaoSenhaController {
 
     @PostMapping("/redefinir")
     public String redefinirSenha(
-            @RequestParam String email,
-            @RequestParam String codigo,
-            @RequestParam String novaSenha) {
+            @RequestParam @NotBlank @Email @Size(max = 80) String email,
+            @RequestParam @Pattern(regexp = "^[0-9]{6}$") String codigo,
+            @RequestParam @NotBlank @Size(min = 8, max = 72) String novaSenha) {
 
         Usuario usuario =
                 usuarioRepository
@@ -69,7 +72,7 @@ public class RecuperacaoSenhaController {
                                 new RuntimeException(
                                         "Usuário não encontrado"));
 
-        if (usuario.getExpiracaoCodigo()
+        if (usuario.getExpiracaoCodigo() == null || usuario.getCodigoRecuperacao() == null || usuario.getExpiracaoCodigo()
                 .isBefore(LocalDateTime.now())) {
 
             throw new RuntimeException(

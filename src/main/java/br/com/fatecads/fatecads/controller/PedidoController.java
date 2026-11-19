@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import java.util.Map;
 
 import br.com.fatecads.fatecads.entity.Aluno;
 import br.com.fatecads.fatecads.entity.Pedido;
@@ -34,9 +38,23 @@ public class PedidoController {
 
     @PostMapping
     @ResponseBody
-    public Pedido salvarPedido(@RequestBody Pedido pedido) {
-        return pedidoService.salvarPedido(pedido);
+    public ResponseEntity<Map<String, Object>> salvarPedido(@Valid @RequestBody PedidoRequest entrada) {
+        Pedido pedido = new Pedido();
+        Aluno aluno = new Aluno();
+        aluno.setIdAluno(entrada.aluno().idAluno());
+        pedido.setAluno(aluno);
+        pedido.setItens(entrada.itens().stream().map(ItemRequest::paraEntidade).toList());
+        try {
+            Pedido salvo = pedidoService.salvarPedido(pedido);
+            return ResponseEntity.ok(Map.of("pedidoId", salvo.getIdPedido()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
+        }
     }
+
+    public record PedidoRequest(@NotNull @Valid AlunoId aluno,
+            @NotEmpty @Size(max = 100) List<@Valid ItemRequest> itens) { }
+    public record AlunoId(@NotNull @Positive Integer idAluno) { }
 
     // Método para abrir a tela de cadastro de pedidos
     @GetMapping("/criar")

@@ -20,6 +20,8 @@ import java.io.IOException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/produtos")
@@ -45,12 +47,34 @@ public class ProdutoController {
 
     @PostMapping("/salvar")
     public String salvar(
-            @ModelAttribute Produto produto,
+            @Valid @ModelAttribute Produto produto, BindingResult erros,
             @RequestParam("imagem") MultipartFile imagem) throws IOException {
 
         if (!imagem.isEmpty()) {
+            if (imagem.getSize() > 5_000_000) {
+                erros.reject("imagem.invalida", "Imagem deve ser PNG ou JPEG com até 5 MB.");
+            } else {
+                byte[] bytes = imagem.getBytes();
+                boolean png = bytes.length >= 8 && bytes[0] == (byte) 0x89 && bytes[1] == 0x50
+                    && bytes[2] == 0x4e && bytes[3] == 0x47 && bytes[4] == 0x0d
+                    && bytes[5] == 0x0a && bytes[6] == 0x1a && bytes[7] == 0x0a;
+                boolean jpeg = bytes.length >= 3 && bytes[0] == (byte) 0xff
+                    && bytes[1] == (byte) 0xd8 && bytes[2] == (byte) 0xff;
+                if (!(png || jpeg)) {
+                    erros.reject("imagem.invalida", "Imagem deve ser PNG ou JPEG com até 5 MB.");
+                }
+            }
+        }
+        if (erros.hasErrors()) return "produto/formularioProduto";
+
+        if (!imagem.isEmpty()) {
             produto.setImagemProduto(imagem.getBytes());
-            produto.setTipoImagem(imagem.getContentType());
+            produto.setTipoImagem(imagem.getBytes()[0] == (byte) 0x89 ? "image/png" : "image/jpeg");
+        } else if (produto.getIdProduto() != null) {
+            Produto existente = produtoService.findById(produto.getIdProduto());
+            if (existente == null) return "redirect:/produtos/listar";
+            produto.setImagemProduto(existente.getImagemProduto());
+            produto.setTipoImagem(existente.getTipoImagem());
         }
 
         produtoService.save(produto);

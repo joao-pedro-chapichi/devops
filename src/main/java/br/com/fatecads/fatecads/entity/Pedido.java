@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 @Entity
 @AllArgsConstructor
@@ -32,6 +34,7 @@ public class Pedido {
     private Double totalPedido;
 
     @ManyToOne
+    @NotNull
     @JoinColumn(name = "idAluno_fk")
     private Aluno aluno;
 
@@ -40,6 +43,7 @@ public class Pedido {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @NotEmpty @Size(max = 100) @Valid
     private List<ItemDoPedido> itens;
 
     // Médoto para calcular o total
