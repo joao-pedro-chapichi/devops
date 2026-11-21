@@ -3,6 +3,10 @@ package br.com.fatecads.fatecads.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +21,10 @@ import br.com.fatecads.fatecads.service.ProfessorService;
 @Controller
 @RequestMapping("/professores")
 public class ProfessorController {
+    @InitBinder("professor")
+    void camposPermitidos(WebDataBinder binder) {
+        binder.setAllowedFields("idProfessor", "nomeProfessor", "telefoneProfessor", "graduacaoProfessor", "rmProfessor");
+    }
     
     // Injeção de dependêccia da service de alunos
     @Autowired
@@ -24,7 +32,10 @@ public class ProfessorController {
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Professor professor) {
+    public String salvar(@Valid @ModelAttribute Professor professor, BindingResult erros) {
+        if (erros.hasErrors()) {
+            return "professor/formularioProfessor";
+        }
         professorService.save(professor);
         return "redirect:/professores/listar";
     }   

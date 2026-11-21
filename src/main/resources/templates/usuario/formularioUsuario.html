@@ -303,6 +303,7 @@
                 font-size: 26px;
             }
         }
+        .erro-campo { display: block; color: #ffb4b4; font-size: 13px; margin: 4px 0 12px; }
     </style>
 
 </head>
@@ -325,6 +326,7 @@
             th:action="@{/usuarios/salvar}"
             method="post"
             th:object="${usuario}"
+            novalidate
         >
 
             <input
@@ -343,6 +345,7 @@
                 placeholder="Digite seu nome"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('nomeUsuario')}" th:errors="*{nomeUsuario}"></small>
 
             <label for="email">
                 Email
@@ -355,6 +358,7 @@
                 placeholder="Digite seu email"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('emailUsuario')}" th:errors="*{emailUsuario}"></small>
 
             <label for="login">
                 Login
@@ -367,6 +371,11 @@
                 placeholder="Escolha um login"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('loginUsuario')}" th:errors="*{loginUsuario}"></small>
+
+            <label for="telefone">Telefone</label>
+            <input type="tel" id="telefone" th:field="*{telefoneUsuario}" placeholder="11999999999" required>
+            <small class="erro-campo" th:if="${#fields.hasErrors('telefoneUsuario')}" th:errors="*{telefoneUsuario}"></small>
 
             <label for="senha">
                 Senha
@@ -375,10 +384,11 @@
             <input
                 type="password"
                 id="senha"
-                th:field="*{senhaUsuario}"
+                name="senhaUsuario"
                 placeholder="Crie uma senha"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('senhaUsuario')}" th:errors="*{senhaUsuario}"></small>
 
             <input
                 type="submit"

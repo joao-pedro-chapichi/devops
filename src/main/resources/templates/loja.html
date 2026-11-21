@@ -22,6 +22,8 @@
         .marca { margin: 0; color: #63728a; font-size: 13px; }
         .preco { font-size: 20px; color: #047857; font-weight: bold; margin-top: auto; }
         .controles { display: flex; gap: 8px; }
+        .controle-qtd { display: flex; flex-direction: column; }
+        .erro-campo { color: #a61b1b; font-size: 12px; margin-top: 4px; }
         input[type=number] { width: 64px; border: 1px solid #bdcae0; border-radius: 7px; padding: 8px; font-size: 15px; }
         button { border: 0; border-radius: 7px; cursor: pointer; font-weight: bold; }
         .adicionar { flex: 1; color: white; background: #0d63c8; padding: 10px; }
@@ -58,7 +60,7 @@
                         <p class="marca" th:text="${produto.marcaProduto + ' • ' + produto.unidadeProduto}">Marca</p>
                         <div class="preco" th:text="${'R$ ' + #numbers.formatDecimal(produto.valorProduto, 1, 2, 'COMMA')}">R$ 0,00</div>
                         <div class="controles">
-                            <input type="number" min="1" value="1" th:id="${'qtd-' + produto.idProduto}">
+                            <div class="controle-qtd"><input type="number" min="1" max="1000" value="1" th:id="${'qtd-' + produto.idProduto}"><small class="erro-campo" th:id="${'erro-qtd-' + produto.idProduto}" role="alert"></small></div>
                             <button class="adicionar" th:attr="data-id=${produto.idProduto},data-nome=${produto.descricaoProduto},data-preco=${produto.valorProduto}" onclick="adicionar(this)">Adicionar</button>
                         </div>
                     </div>
@@ -77,33 +79,49 @@
     </main>
     <script>
         const CHAVE = 'fatecads-carrinho';
-        let carrinho = JSON.parse(localStorage.getItem(CHAVE) || '[]');
+        let carrinho;
+        try { carrinho = JSON.parse(localStorage.getItem(CHAVE) || '[]'); }
+        catch { carrinho = []; }
+        if (!Array.isArray(carrinho)) carrinho = [];
+        carrinho = carrinho.filter(item => Number.isInteger(item.id) && item.id > 0 && typeof item.nome === 'string' && Number.isFinite(item.preco) && item.preco > 0 && Number.isInteger(item.quantidade) && item.quantidade >= 1 && item.quantidade <= 1000);
         const moeda = valor => valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         const salvar = () => localStorage.setItem(CHAVE, JSON.stringify(carrinho));
         function adicionar(botao) {
             const id = Number(botao.dataset.id);
             const quantidade = Number(document.getElementById('qtd-' + id).value);
-            if (!Number.isInteger(quantidade) || quantidade < 1) return mostrar('Informe uma quantidade válida.', true);
+            const aviso = document.getElementById('erro-qtd-' + id);
+            aviso.textContent = '';
+            if (!Number.isInteger(quantidade) || quantidade < 1 || quantidade > 1000) { aviso.textContent = 'Informe uma quantidade entre 1 e 1000.'; return; }
             const existente = carrinho.find(item => item.id === id);
+            if (existente && existente.quantidade + quantidade > 1000) { aviso.textContent = 'O máximo por produto é 1000.'; return; }
             if (existente) existente.quantidade += quantidade;
             else carrinho.push({ id, nome: botao.dataset.nome, preco: Number(botao.dataset.preco), quantidade });
             salvar(); renderizar(); mostrar('Produto adicionado ao carrinho.');
         }
         function alterar(id, diferenca) {
             const item = carrinho.find(item => item.id === id); item.quantidade += diferenca;
+            if (item.quantidade > 1000) { item.quantidade = 1000; return mostrar('O máximo por produto é 1000.', true); }
             if (item.quantidade < 1) carrinho = carrinho.filter(item => item.id !== id);
             salvar(); renderizar();
         }
         function remover(id) { carrinho = carrinho.filter(item => item.id !== id); salvar(); renderizar(); }
         function limpar() { carrinho = []; salvar(); renderizar(); }
         function renderizar() {
-            const lista = document.getElementById('itens'); lista.innerHTML = '';
-            if (!carrinho.length) lista.innerHTML = '<p class="vazio">Seu carrinho está vazio.</p>';
+            const lista = document.getElementById('itens'); lista.replaceChildren();
+            if (!carrinho.length) { const vazio = document.createElement('p'); vazio.className = 'vazio'; vazio.textContent = 'Seu carrinho está vazio.'; lista.appendChild(vazio); }
             carrinho.forEach(item => {
                 const linha = document.createElement('div'); linha.className = 'item';
-                linha.innerHTML = `<div><div class="item-nome"></div><div class="item-preco">${moeda(item.preco)} cada</div></div><div class="qtd"><button aria-label="Diminuir">−</button><strong>${item.quantidade}</strong><button aria-label="Aumentar">+</button><button class="remover" aria-label="Remover">×</button></div>`;
-                linha.querySelector('.item-nome').textContent = item.nome;
-                const botoes = linha.querySelectorAll('button'); botoes[0].onclick = () => alterar(item.id, -1); botoes[1].onclick = () => alterar(item.id, 1); botoes[2].onclick = () => remover(item.id);
+                const descricao = document.createElement('div');
+                const nome = document.createElement('div'); nome.className = 'item-nome'; nome.textContent = item.nome;
+                const preco = document.createElement('div'); preco.className = 'item-preco'; preco.textContent = moeda(item.preco) + ' cada';
+                descricao.append(nome, preco);
+                const controles = document.createElement('div'); controles.className = 'qtd';
+                const diminuir = document.createElement('button'); diminuir.textContent = '−'; diminuir.setAttribute('aria-label', 'Diminuir'); diminuir.onclick = () => alterar(item.id, -1);
+                const numero = document.createElement('strong'); numero.textContent = item.quantidade;
+                const aumentar = document.createElement('button'); aumentar.textContent = '+'; aumentar.setAttribute('aria-label', 'Aumentar'); aumentar.onclick = () => alterar(item.id, 1);
+                const removerBotao = document.createElement('button'); removerBotao.className = 'remover'; removerBotao.textContent = '×'; removerBotao.setAttribute('aria-label', 'Remover'); removerBotao.onclick = () => remover(item.id);
+                controles.append(diminuir, numero, aumentar, removerBotao);
+                linha.append(descricao, controles);
                 lista.appendChild(linha);
             });
             document.getElementById('total').textContent = moeda(carrinho.reduce((total, item) => total + item.preco * item.quantidade, 0));
@@ -111,10 +129,12 @@
         function mostrar(texto, erro = false) { const el = document.getElementById('mensagem'); el.textContent = texto; el.className = 'mensagem ' + (erro ? 'erro' : 'sucesso'); el.style.display = 'block'; }
         async function finalizar() {
             if (!carrinho.length) return mostrar('Adicione pelo menos um produto antes de finalizar.', true);
-            const resposta = await fetch('/compras/finalizar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itens: carrinho.map(item => ({ quantidade: item.quantidade, produto: { idProduto: item.id } })) }) });
-            const dados = await resposta.json();
-            if (!resposta.ok) return mostrar(dados.erro || 'Não foi possível finalizar a compra.', true);
-            limpar(); mostrar(`${dados.mensagem} Pedido #${dados.pedidoId}.`);
+            try {
+                const resposta = await fetch('/compras/finalizar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itens: carrinho.map(item => ({ quantidade: item.quantidade, produto: { idProduto: item.id } })) }) });
+                const dados = await resposta.json();
+                if (!resposta.ok) return mostrar(dados.erro || 'Não foi possível finalizar a compra.', true);
+                limpar(); mostrar(`${dados.mensagem} Pedido #${dados.pedidoId}.`);
+            } catch { mostrar('Não foi possível finalizar a compra. Tente novamente.', true); }
         }
         renderizar();
     </script>

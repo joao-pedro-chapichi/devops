@@ -330,6 +330,7 @@
                 font-size: 26px;
             }
         }
+        .erro-campo { display: block; color: #ffb4b4; font-size: 13px; margin: 4px 0 12px; }
     </style>
 
 </head>
@@ -353,6 +354,7 @@
             th:action="@{/alunos/salvar}"
             method="post"
             th:object="${aluno}"
+            novalidate
         >
 
             <input
@@ -372,6 +374,7 @@
                 placeholder="Digite o nome completo"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('nomeAluno')}" th:errors="*{nomeAluno}"></small>
 
 
             <label for="emailAluno">
@@ -385,6 +388,7 @@
                 placeholder="exemplo@email.com"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('emailAluno')}" th:errors="*{emailAluno}"></small>
 
 
             <div class="linha-campos">
@@ -399,9 +403,10 @@
                         type="tel"
                         id="telefoneAluno"
                         th:field="*{telefoneAluno}"
-                        placeholder="(00) 00000-0000"
+                        placeholder="11999999999"
                         required
                     >
+                    <small class="erro-campo" th:if="${#fields.hasErrors('telefoneAluno')}" th:errors="*{telefoneAluno}"></small>
 
                 </div>
 
@@ -416,9 +421,10 @@
                         type="text"
                         id="cpfAluno"
                         th:field="*{cpfAluno}"
-                        placeholder="000.000.000-00"
+                        placeholder="00000000000"
                         required
                     >
+                    <small class="erro-campo" th:if="${#fields.hasErrors('cpfAluno')}" th:errors="*{cpfAluno}"></small>
 
                 </div>
 
@@ -436,6 +442,7 @@
                 placeholder="Digite o endereço do aluno"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('enderecoAluno')}" th:errors="*{enderecoAluno}"></small>
 
 
             <div class="linha-campos">
@@ -453,6 +460,7 @@
                         placeholder="Digite o RA"
                         required
                     >
+                    <small class="erro-campo" th:if="${#fields.hasErrors('raAluno')}" th:errors="*{raAluno}"></small>
 
                 </div>
 
@@ -484,6 +492,7 @@
                         </option>
 
                     </select>
+                    <small class="erro-campo" th:if="${#fields.hasErrors('curso')}" th:errors="*{curso}"></small>
 
                 </div>
 

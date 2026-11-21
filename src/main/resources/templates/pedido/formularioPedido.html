@@ -422,6 +422,7 @@
                 font-size: 27px;
             }
         }
+        .erro-campo { display: block; color: #ffb4b4; font-size: 13px; margin: 5px 0 10px; }
     </style>
 
 </head>
@@ -484,6 +485,7 @@
                 </label>
 
                 <input list="listaAlunos" id="aluno" type="text" placeholder="Digite o nome ou código do aluno">
+                <small id="erro-aluno" class="erro-campo" role="alert"></small>
 
             </div>
 
@@ -509,6 +511,7 @@
                         </label>
                         <input type="text" placeholder="Digite ou selecione o produto" id="produto"
                             list="listaProdutos">
+                        <small id="erro-produto" class="erro-campo" role="alert"></small>
                     </div>
 
 
@@ -516,7 +519,8 @@
                         <label for="quantidade">
                             Quantidade
                         </label>
-                        <input type="number" id="quantidade" placeholder="1" min="1">
+                        <input type="number" id="quantidade" placeholder="1" min="1" max="1000">
+                        <small id="erro-quantidade" class="erro-campo" role="alert"></small>
                     </div>
                 </div>
 
@@ -564,6 +568,7 @@
                         </tbody>
                     </table>
                 </div>
+                <small id="erro-itens" class="erro-campo" role="alert"></small>
 
 
                 <div class="resumo">
@@ -597,366 +602,7 @@
     </div>
 
 
-    <script>
-
-        let itens = [];
-
-
-        function adicionarItem() {
-
-            let produtoInput =
-                document.getElementById("produto").value;
-
-            let quantidade =
-                document.getElementById("quantidade").value;
-
-
-            if (!produtoInput || quantidade <= 0) {
-
-                alert(
-                    "Preencha corretamente o produto e a quantidade!"
-                );
-
-                return;
-            }
-
-
-            let partes =
-                produtoInput.split(" - ");
-
-
-            let produtoId =
-                partes[0];
-
-            let produtoNome =
-                partes[1];
-
-
-            let options =
-                document.querySelectorAll(
-                    "#listaProdutos option"
-                );
-
-
-            let preco = null;
-
-
-            options.forEach(opt => {
-
-                if (opt.value === produtoInput) {
-
-                    preco =
-                        opt.getAttribute(
-                            "data-preco"
-                        );
-
-                }
-
-            });
-
-
-            if (!preco) {
-
-                alert(
-                    "Produto inválido! Selecione um produto da lista."
-                );
-
-                return;
-            }
-
-
-            let subtotal =
-                quantidade * preco;
-
-
-            itens.push({
-
-                produto: {
-                    idProduto: produtoId
-                },
-
-                nomeProduto: produtoNome,
-
-                quantidade:
-                    parseInt(quantidade),
-
-                preco:
-                    parseFloat(preco),
-
-                subtotal:
-                    subtotal
-
-            });
-
-
-            document.getElementById("produto").value = "";
-
-            document.getElementById("quantidade").value = "";
-
-
-            renderTabela();
-
-        }
-
-
-        function removerItem(index) {
-
-            itens.splice(index, 1);
-
-            renderTabela();
-
-        }
-
-
-        function alterarQuantidade(
-            index,
-            novaQuantidade
-        ) {
-
-            novaQuantidade =
-                parseInt(novaQuantidade);
-
-
-            if (
-                novaQuantidade <= 0 ||
-                isNaN(novaQuantidade)
-            ) {
-
-                alert(
-                    "A quantidade deve ser maior que zero!"
-                );
-
-                renderTabela();
-
-                return;
-            }
-
-
-            itens[index].quantidade =
-                novaQuantidade;
-
-
-            itens[index].subtotal =
-                itens[index].quantidade *
-                itens[index].preco;
-
-
-            renderTabela();
-
-        }
-
-
-        function renderTabela() {
-
-            let tabela =
-                document.getElementById(
-                    "tabela-itens"
-                );
-
-
-            tabela.innerHTML = "";
-
-
-            if (itens.length === 0) {
-
-                tabela.innerHTML = `
-                    <tr class="empty-row" id="empty-row">
-
-                        <td colspan="5">
-
-                            Nenhum produto adicionado ao pedido
-
-                        </td>
-
-                    </tr>
-                `;
-
-
-                document.getElementById(
-                    "totalPedido"
-                ).innerText =
-                    "R$ 0,00";
-
-
-                return;
-            }
-
-
-            let total = 0;
-
-
-            itens.forEach(
-                (item, index) => {
-
-                    total +=
-                        item.subtotal;
-
-
-                    tabela.innerHTML += `
-
-                        <tr>
-
-                            <td>
-                                ${item.nomeProduto}
-                            </td>
-
-                            <td>
-
-                                <input
-                                    type="number"
-                                    class="quantidade-tabela"
-                                    value="${item.quantidade}"
-                                    min="1"
-                                    onchange="alterarQuantidade(${index}, this.value)"
-                                >
-
-                            </td>
-
-                            <td>
-
-                                R$ ${item.preco
-                            .toFixed(2)
-                            .replace('.', ',')}
-
-                            </td>
-
-                            <td>
-
-                                R$ ${item.subtotal
-                            .toFixed(2)
-                            .replace('.', ',')}
-
-                            </td>
-
-                            <td>
-
-                                <button
-                                    type="button"
-                                    class="btn-remove"
-                                    onclick="removerItem(${index})"
-                                >
-
-                                    Remover
-
-                                </button>
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }
-            );
-
-
-            document.getElementById(
-                "totalPedido"
-            ).innerText =
-                "R$ " +
-                total
-                    .toFixed(2)
-                    .replace('.', ',');
-
-        }
-
-
-        function salvarPedido() {
-
-            let alunoInput =
-                document.getElementById(
-                    "aluno"
-                ).value;
-
-
-            if (!alunoInput) {
-
-                alert(
-                    "Selecione um aluno antes de salvar!"
-                );
-
-                return;
-            }
-
-
-            if (itens.length === 0) {
-
-                alert(
-                    "Adicione ao menos um produto ao pedido!"
-                );
-
-                return;
-            }
-
-
-            let alunoId =
-                alunoInput.split(" - ")[0];
-
-
-            let pedido = {
-
-                cliente: {
-                    idAluno: alunoId
-                },
-
-                itens: itens
-
-            };
-
-
-            fetch("/pedidos", {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json"
-
-                },
-
-                body:
-                    JSON.stringify(pedido)
-
-            })
-
-                .then(res => {
-
-                    if (!res.ok) {
-
-                        throw new Error(
-                            "Erro ao salvar pedido"
-                        );
-
-                    }
-
-                    return res.json();
-
-                })
-
-                .then(data => {
-
-                    alert(
-                        "Pedido salvo com sucesso!"
-                    );
-
-                    location.reload();
-
-                })
-
-                .catch(err => {
-
-                    alert(
-                        "Erro ao salvar o pedido. Tente novamente."
-                    );
-
-                    console.error(err);
-
-                });
-
-        }
-
-    </script>
+    <script th:src="@{/pedido.js}"></script>
 
 </body>
 

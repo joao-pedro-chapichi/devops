@@ -4,6 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,20 +16,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import br.com.fatecads.fatecads.entity.Usuario;
 import br.com.fatecads.fatecads.service.UsuarioService;
+import br.com.fatecads.fatecads.repository.UsuarioRepository;
 
 
 
 @Controller
 @RequestMapping("/usuarios")
 public class UsuarioController {
+    @InitBinder("usuario")
+    void camposPermitidos(WebDataBinder binder) {
+        binder.setAllowedFields("idUsuario", "nomeUsuario", "emailUsuario", "loginUsuario", "senhaUsuario", "telefoneUsuario");
+    }
     
     // Injeção de dependêccia da service de alunos
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
-public String salvar(@ModelAttribute Usuario usuario, Authentication authentication) {
+public String salvar(@Valid @ModelAttribute Usuario usuario, BindingResult erros, Model model, Authentication authentication) {
     boolean admin = ehAdmin(authentication);
 
     // Todo novo cadastro é usuário comum. O perfil não é definido pelo formulário.
@@ -43,6 +54,21 @@ public String salvar(@ModelAttribute Usuario usuario, Authentication authenticat
         }
 
         usuario.setRole(usuarioExistente.getRole());
+        usuario.setCodigoRecuperacao(usuarioExistente.getCodigoRecuperacao());
+        usuario.setExpiracaoCodigo(usuarioExistente.getExpiracaoCodigo());
+    }
+
+    Integer id = usuario.getIdUsuario() == null ? -1 : usuario.getIdUsuario();
+    if (usuario.getLoginUsuario() != null && usuarioRepository.existsByLoginUsuarioAndIdUsuarioNot(usuario.getLoginUsuario(), id)) {
+        erros.rejectValue("loginUsuario", "duplicado", "Este login já está em uso.");
+    }
+    if (usuario.getEmailUsuario() != null && usuarioRepository.existsByEmailUsuarioAndIdUsuarioNot(usuario.getEmailUsuario(), id)) {
+        erros.rejectValue("emailUsuario", "duplicado", "Este email já está em uso.");
+    }
+    if (erros.hasErrors()) {
+        usuario.setSenhaUsuario(null);
+        model.addAttribute("podeDefinirRole", admin);
+        return "usuario/formularioUsuario";
     }
 
     usuarioService.save(usuario);
@@ -76,6 +102,7 @@ public String salvar(@ModelAttribute Usuario usuario, Authentication authenticat
     @GetMapping("/editar/{id}")
     public String editarForm(@PathVariable Integer id, Model model, Authentication authentication) {
         Usuario usuario = usuarioService.findById(id);
+        if (usuario != null) usuario.setSenhaUsuario(null);
         model.addAttribute("usuario", usuario);
         model.addAttribute("podeDefinirRole", ehAdmin(authentication));
         return "usuario/formularioUsuario";

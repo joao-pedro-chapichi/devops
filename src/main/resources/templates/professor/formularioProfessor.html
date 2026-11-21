@@ -296,6 +296,7 @@
                 font-size: 26px;
             }
         }
+        .erro-campo { display: block; color: #ffb4b4; font-size: 13px; margin: 4px 0 12px; }
     </style>
 
 </head>
@@ -318,6 +319,7 @@
             th:action="@{/professores/salvar}"
             method="post"
             th:object="${professor}"
+            novalidate
         >
 
             <input
@@ -336,6 +338,7 @@
                 placeholder="Digite o nome do professor"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('nomeProfessor')}" th:errors="*{nomeProfessor}"></small>
 
             <label for="telefone">
                 Telefone
@@ -348,6 +351,7 @@
                 placeholder="Digite o telefone"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('telefoneProfessor')}" th:errors="*{telefoneProfessor}"></small>
 
             <label for="graduacao">
                 Graduação
@@ -360,6 +364,7 @@
                 placeholder="Ex: Ciência da Computação"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('graduacaoProfessor')}" th:errors="*{graduacaoProfessor}"></small>
 
             <label for="rm">
                 RM
@@ -372,6 +377,7 @@
                 placeholder="Digite o RM do professor"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('rmProfessor')}" th:errors="*{rmProfessor}"></small>
 
             <input
                 type="submit"

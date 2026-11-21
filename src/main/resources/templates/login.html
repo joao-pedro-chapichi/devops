@@ -339,18 +339,13 @@
                 required
             >
 
+            <p th:if="${param.error}" class="mensagem erro" role="alert">Usuário ou senha inválidos.</p>
+
             <button type="submit">
                 Entrar
             </button>
 
         </form>
-
-        <p
-            th:if="${param.error}"
-            class="mensagem erro"
-        >
-            Usuário ou senha inválidos
-        </p>
 
         <p
             th:if="${param.logout}"

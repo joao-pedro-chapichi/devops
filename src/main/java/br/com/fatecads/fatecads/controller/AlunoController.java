@@ -3,6 +3,10 @@ package br.com.fatecads.fatecads.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,12 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import br.com.fatecads.fatecads.entity.Aluno;
 import br.com.fatecads.fatecads.service.AlunoService;
 import br.com.fatecads.fatecads.service.CursoService;
+import br.com.fatecads.fatecads.validation.CpfValidator;
 
 
 
 @Controller
 @RequestMapping("/alunos")
 public class AlunoController {
+    @InitBinder("aluno")
+    void camposPermitidos(WebDataBinder binder) {
+        binder.setAllowedFields("idAluno", "nomeAluno", "emailAluno", "telefoneAluno", "enderecoAluno", "cpfAluno", "raAluno", "curso");
+    }
     
     // Injeção de dependêccia da service de alunos
     @Autowired
@@ -28,7 +37,19 @@ public class AlunoController {
 
     // Método para salvar um aluno
     @PostMapping("/salvar")
-    public String salvar(@ModelAttribute Aluno aluno) {
+    public String salvar(@Valid @ModelAttribute Aluno aluno, BindingResult erros, Model model) {
+        if (aluno.getCpfAluno() != null && aluno.getCpfAluno().matches("\\d{11}")
+                && !CpfValidator.valido(aluno.getCpfAluno())) {
+            erros.rejectValue("cpfAluno", "invalido", "Informe um CPF válido.");
+        }
+        if (aluno.getCurso() != null && (aluno.getCurso().getIdCurso() == null
+                || cursoService.findById(aluno.getCurso().getIdCurso()) == null)) {
+            erros.rejectValue("curso", "invalido", "Selecione um curso válido.");
+        }
+        if (erros.hasErrors()) {
+            model.addAttribute("cursos", cursoService.findAll());
+            return "aluno/formularioAluno";
+        }
         alunoService.save(aluno);
         return "redirect:/alunos/listar";
     }   

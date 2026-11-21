@@ -308,6 +308,7 @@
                 font-size: 26px;
             }
         }
+        .erro-campo { display: block; color: #ffb4b4; font-size: 13px; margin: 4px 0 12px; }
     </style>
 
 </head>
@@ -330,6 +331,7 @@
             th:action="@{/disciplinas/salvar}"
             method="post"
             th:object="${disciplina}"
+            novalidate
         >
 
             <input
@@ -348,6 +350,7 @@
                 placeholder="Digite o nome da disciplina"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('nomeDisciplina')}" th:errors="*{nomeDisciplina}"></small>
 
             <label for="siglaDisciplina">
                 Sigla
@@ -360,6 +363,7 @@
                 placeholder="Ex: POO"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('siglaDisciplina')}" th:errors="*{siglaDisciplina}"></small>
 
             <label for="cargaHorariaDisciplina">
                 Carga Horária
@@ -373,6 +377,7 @@
                 min="1"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('cargaHorariaDisciplina')}" th:errors="*{cargaHorariaDisciplina}"></small>
 
             <label for="curso">
                 Curso
@@ -399,6 +404,7 @@
                 </option>
 
             </select>
+            <small class="erro-campo" th:if="${#fields.hasErrors('curso')}" th:errors="*{curso}"></small>
 
             <label for="professor">
                 Professor
@@ -425,6 +431,7 @@
                 </option>
 
             </select>
+            <small class="erro-campo" th:if="${#fields.hasErrors('professor')}" th:errors="*{professor}"></small>
 
             <input
                 type="submit"

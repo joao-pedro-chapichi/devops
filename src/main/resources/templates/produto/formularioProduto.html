@@ -328,6 +328,7 @@
                 font-size: 26px;
             }
         }
+        .erro-campo { display: block; color: #ffb4b4; font-size: 13px; margin: 4px 0 12px; }
     </style>
 </head>
 
@@ -349,6 +350,7 @@
             th:action="@{/produtos/salvar}"
             method="post"
             th:object="${produto}"
+            novalidate
             enctype="multipart/form-data"
         >
 
@@ -357,6 +359,7 @@
                 name="idProduto"
                 th:field="*{idProduto}"
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('idProduto')}" th:errors="*{idProduto}"></small>
 
             <label for="descricaoProduto">
                 Descrição do Produto
@@ -370,6 +373,7 @@
                 placeholder="Digite a descrição do produto"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('descricaoProduto')}" th:errors="*{descricaoProduto}"></small>
 
             <label for="valorProduto">
                 Valor do Produto
@@ -385,6 +389,7 @@
                 min="0"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('valorProduto')}" th:errors="*{valorProduto}"></small>
 
             <label for="unidadeProduto">
                 Unidade
@@ -398,6 +403,7 @@
                 placeholder="Ex: Unidade, Kg, Caixa..."
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('unidadeProduto')}" th:errors="*{unidadeProduto}"></small>
 
             <label for="marcaProduto">
                 Marca
@@ -411,6 +417,7 @@
                 placeholder="Digite a marca do produto"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('marcaProduto')}" th:errors="*{marcaProduto}"></small>
 
             <label for="imagem">
                 Imagem do Produto
@@ -420,8 +427,9 @@
                 type="file"
                 name="imagem"
                 id="imagem"
-                accept="image/*"
+                accept="image/png,image/jpeg,image/gif"
             >
+            <small class="erro-campo" th:if="${erroImagem}" th:text="${erroImagem}"></small>
 
             <input
                 type="submit"

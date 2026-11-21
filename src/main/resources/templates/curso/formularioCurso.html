@@ -296,6 +296,7 @@
                 font-size: 26px;
             }
         }
+        .erro-campo { display: block; color: #ffb4b4; font-size: 13px; margin: 4px 0 12px; }
     </style>
 
 </head>
@@ -318,6 +319,7 @@
             th:action="@{/cursos/salvar}"
             method="post"
             th:object="${curso}"
+            novalidate
         >
 
             <input
@@ -336,6 +338,7 @@
                 placeholder="Digite o nome do curso"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('nomeCurso')}" th:errors="*{nomeCurso}"></small>
 
             <label for="periodoCurso">
                 Período
@@ -348,6 +351,7 @@
                 placeholder="Ex: Noturno"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('periodoCurso')}" th:errors="*{periodoCurso}"></small>
 
             <label for="cargaHorariaCurso">
                 Carga Horária
@@ -361,6 +365,7 @@
                 min="1"
                 required
             >
+            <small class="erro-campo" th:if="${#fields.hasErrors('cargaHorariaCurso')}" th:errors="*{cargaHorariaCurso}"></small>
 
             <input
                 type="submit"
