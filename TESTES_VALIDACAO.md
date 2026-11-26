@@ -1,6 +1,39 @@
-# Testes de validação de entradas
+# Tema 19 — teste de segurança: validação de entradas
 
-## Como executar
+## Objetivo e conceito
+
+O Tema 19 da atividade pede verificar se os formulários tratam entradas inesperadas, caracteres especiais e conteúdo potencialmente perigoso. Validar entradas significa conferir formato e limites (sintaxe), além de verificar se o valor faz sentido para a operação (semântica). A verificação precisa ocorrer no servidor, pois uma requisição pode ignorar as restrições do navegador. Ao devolver um valor ao HTML, ele deve aparecer como texto, sem ser executado como código.
+
+Referências de pesquisa: [OWASP — Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html) e [OWASP — Cross Site Scripting Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet).
+
+## Ferramentas utilizadas
+
+- **JUnit 5 (Jupiter):** organiza os casos com `org.junit.jupiter.api.Test` e verifica os resultados com asserções. [Documentação do JUnit 5](https://docs.junit.org/5.13.1/user-guide/index.html).
+- **Spring Boot Test e MockMvc:** enviam requisições HTTP simuladas aos controllers e verificam status, modelo, redirecionamentos e HTML renderizado, sem abrir um navegador. [Documentação do MockMvc](https://docs.spring.io/spring-framework/reference/testing/mockmvc.html).
+- **Bean Validation:** valida campos obrigatórios, formatos, tamanhos e limites no servidor.
+- **H2 em memória:** isola os testes do PostgreSQL usado pela aplicação; a configuração está em `src/test/resources/application.properties`.
+- **Maven Surefire Report:** transforma os resultados dos testes em um relatório HTML.
+
+## Procedimento e evidências
+
+Os testes unitários estão em `src/test/java/br/com/fatecads/fatecads/ValidacaoEntradaTests.java`. Os testes HTTP e de formulário estão em `ValidacaoHttpIntegrationTests.java` e `FatecadsApplicationTests.java`, na mesma pasta. Eles executam as seguintes verificações:
+
+| Entrada enviada | Resultado esperado | Resultado obtido |
+| --- | --- | --- |
+| Nome de usuário ou curso contendo `<script>` | Recusar a entrada e mostrar o erro no formulário | Erro exibido; conteúdo não aparece como HTML executável |
+| Descrição de produto contendo `<script>` | Recusar a descrição e indicar o campo | Formulário retornado com erro abaixo da descrição |
+| Descrição com `&`, nomes acentuados e marca `H&M` | Aceitar caracteres legítimos e escapar `&` na saída HTML | Valores aceitos; `&` renderizado como `&amp;` no atributo HTML |
+| Carga horária `0` ou `abc` | Rejeitar valor fora do limite ou não numérico | Mensagem específica abaixo da carga horária |
+| CPF com dígitos verificadores incorretos | Rejeitar o cadastro de aluno | Erro abaixo do CPF |
+| Sigla com HTML e curso/professor ausentes | Rejeitar a disciplina | Erros nos campos correspondentes |
+| Telefone com letras | Rejeitar o cadastro de professor | Erro abaixo do telefone |
+| Arquivo SVG contendo código enviado como imagem | Rejeitar o upload | Erro abaixo do campo de imagem |
+| Pedido com aluno inválido, compra vazia ou email de recuperação malicioso | Recusar a requisição | HTTP 400 e mensagem indicando o problema |
+| Curso com dados válidos | Salvar normalmente | Cadastro confirmado no banco H2 de teste |
+
+O teste de cadastro válido é revertido ao terminar. Os testes não gravam dados no PostgreSQL da aplicação.
+
+## Como executar e demonstrar
 
 No Windows, na pasta do projeto:
 
@@ -8,26 +41,12 @@ No Windows, na pasta do projeto:
 .\mvnw.cmd verify
 ```
 
-Esse comando executa os testes e gera um relatório HTML em `target/reports/surefire.html`. Abra esse arquivo no navegador para ver o total de testes, falhas e erros, além dos resultados de cada classe e método. Os resultados detalhados também ficam em `target/surefire-reports/` nos formatos TXT e XML.
+O comando executa os testes e gera `target/reports/surefire.html`. Abra esse arquivo no navegador para mostrar o total de testes, falhas e erros, além do resultado de cada caso. Os arquivos detalhados em TXT e XML ficam em `target/surefire-reports/`.
 
-Os testes usam o banco H2 em memória configurado em `src/test/resources/application.properties`. Não precisam do PostgreSQL local e não gravam dados no banco de produção. O teste de cadastro válido usa uma transação revertida ao terminar.
+**Resultado observado em 25/11/2026:** 17 testes executados, 0 falhas, 0 erros, 0 ignorados e 100% de sucesso. O relatório HTML gerado nesta execução é a evidência desse resultado.
 
-## O que foi verificado
+Na apresentação, execute o comando, abra o relatório e mostre um formulário recebendo uma entrada inválida. Explique que a validação acontece no servidor e que a mensagem aparece abaixo do campo, permitindo corrigir o valor.
 
-| Área | Casos automatizados | Resultado esperado |
-| --- | --- | --- |
-| Alunos | CPF com dígitos verificadores inválidos e curso ausente | Formulário retornado com erro abaixo do CPF |
-| Cursos | HTML no nome, carga horária zero e texto onde deveria haver número | Erros específicos abaixo dos campos |
-| Cursos | Dados válidos | Cadastro salvo no banco de teste |
-| Disciplinas | Sigla com HTML e seleções ausentes | Erros na sigla, curso e professor |
-| Professores | Telefone com letras | Erro abaixo do telefone |
-| Usuários | HTML no nome e tentativa de enviar `ROLE_ADMIN` pelo formulário | Erro no nome; perfil continua `ROLE_USER` |
-| Produtos | Arquivo SVG com código no lugar de imagem permitida | Upload rejeitado com erro abaixo do arquivo |
-| Pedidos | Aluno inválido | HTTP 400 com indicação do campo `aluno` |
-| Loja | Carrinho vazio | HTTP 400 com mensagem clara |
-| Recuperação de senha | Email com conteúdo malicioso | HTTP 400 com indicação do campo `email` |
-| Validação unitária | Conteúdo como `<script>`, limites numéricos, CPF e caracteres legítimos | Entradas perigosas são rejeitadas; nomes com acento e marcas como `H&M` são aceitos |
+Para a entrega, publique o código atualizado e este relatório no GitHub, conforme as orientações da atividade. O HTML em `target/reports/` é gerado localmente a cada execução; execute `verify` novamente para demonstrar a evidência atual.
 
-Os testes de integração estão em `ValidacaoHttpIntegrationTests.java` e `FatecadsApplicationTests.java`. Eles enviam requisições HTTP simuladas pelo MockMvc e verificam a resposta e o HTML produzido pelo Thymeleaf. Os testes unitários estão em `ValidacaoEntradaTests.java`.
-
-Na última execução, **16 testes passaram, sem falhas ou erros (100% de sucesso)**.
+Esses testes exercitam as rotas, validações e templates da aplicação pelo MockMvc. Eles não simulam um navegador real; isso não é exigido pelo Tema 19.

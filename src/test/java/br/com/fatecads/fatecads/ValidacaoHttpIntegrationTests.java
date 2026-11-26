@@ -120,15 +120,33 @@ class ValidacaoHttpIntegrationTests {
                 "<svg onload=alert(1)>".getBytes(StandardCharsets.UTF_8));
         MvcResult resultado = mvc.perform(multipart("/produtos/salvar").with(user("admin").roles("ADMIN"))
                 .file(arquivo)
-                .param("descricaoProduto", "Caneta Azul")
+                .param("descricaoProduto", "Caneta & Cia")
                 .param("valorProduto", "2.50")
                 .param("unidadeProduto", "Unidade")
                 .param("marcaProduto", "Marca"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("produto/formularioProduto"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("Envie uma imagem PNG, JPEG ou GIF de até 5 MB.")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("Caneta &amp; Cia")))
                 .andReturn();
         erroAbaixoDoCampo(resultado, "imagem", "Envie uma imagem PNG, JPEG ou GIF de até 5 MB.");
+    }
+
+    @Test
+    void produtoRejeitaHtmlNaDescricaoEExibeTextoEscapado() throws Exception {
+        MvcResult resultado = mvc.perform(multipart("/produtos/salvar").with(user("admin").roles("ADMIN"))
+                .file(new MockMultipartFile("imagem", new byte[0]))
+                .param("descricaoProduto", "<script>alert(1)</script>")
+                .param("valorProduto", "2.50")
+                .param("unidadeProduto", "Unidade")
+                .param("marcaProduto", "Marca"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("produto/formularioProduto"))
+                .andExpect(model().attributeHasFieldErrors("produto", "descricaoProduto"))
+                .andExpect(content().string(org.hamcrest.Matchers.not(
+                        org.hamcrest.Matchers.containsString("value=\"<script>"))))
+                .andReturn();
+        erroAbaixoDoCampo(resultado, "descricaoProduto", "A descrição contém caracteres inválidos.");
     }
 
     @Test
